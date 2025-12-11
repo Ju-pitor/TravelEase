@@ -1,4 +1,4 @@
-# 🌍 TravelMate – Travel Booking & Management Platform
+# 🌍 TravelEase – Travel Booking & Management Platform
 
 TravelMate is a full-featured travel booking web application built using **Django 5**, featuring destination management, package booking, traveler dashboard, agency admin panel, and secure online payments using **Razorpay**.
 
