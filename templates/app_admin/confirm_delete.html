@@ -1,0 +1,520 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<style>
+    :root {
+        --blue: #1E88E5;
+        --blue-light: #42A5F5;
+        --blue-dark: #1565C0;
+        --navy: #0D47A1;
+        --gold: #F4B400;
+        --gold-light: #FFD54F;
+        --gold-dark: #F9A825;
+        --white: #FFFFFF;
+        --gray-light: #F5F7FA;
+        --text-primary: #263238;
+        --text-secondary: #546E7A;
+        --bg-primary: #FFFFFF;
+        --bg-secondary: #F5F7FA;
+        --card-bg: #FFFFFF;
+        --shadow: rgba(30, 136, 229, 0.1);
+        --error: #F44336;
+        --error-light: #FF5252;
+        --error-dark: #D32F2F;
+        --success: #4CAF50;
+    }
+
+    [data-theme="dark"] {
+        --white: #1a1a1a;
+        --gray-light: #2d2d2d;
+        --text-primary: #E3F2FD;
+        --text-secondary: #90CAF9;
+        --bg-primary: #0D1B2A;
+        --bg-secondary: #1B263B;
+        --card-bg: #1B263B;
+        --shadow: rgba(0, 0, 0, 0.3);
+        --blue: #42A5F5;
+        --blue-light: #64B5F6;
+        --navy: #0D47A1;
+        --error: #FF5252;
+        --error-light: #FF6B6B;
+        --error-dark: #FF3D3D;
+    }
+
+    .delete-confirmation-container {
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 40px 30px;
+        background: var(--bg-secondary);
+        min-height: calc(100vh - 200px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .confirmation-card {
+        background: var(--card-bg);
+        padding: 50px 40px;
+        border-radius: 25px;
+        box-shadow: 0 15px 40px var(--shadow);
+        border: 3px solid var(--error);
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+        animation: cardAppear 0.6s ease-out;
+    }
+
+    @keyframes cardAppear {
+        from {
+            opacity: 0;
+            transform: translateY(30px) scale(0.95);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+    }
+
+    .confirmation-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 6px;
+        background: linear-gradient(135deg, var(--error) 0%, var(--error-light) 50%, var(--error-dark) 100%);
+    }
+
+    .warning-icon {
+        width: 80px;
+        height: 80px;
+        background: linear-gradient(135deg, var(--error) 0%, var(--error-light) 100%);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 25px;
+        font-size: 2.5em;
+        color: var(--white);
+        box-shadow: 0 8px 25px rgba(244, 67, 54, 0.4);
+        animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+        0%, 100% {
+            transform: scale(1);
+            box-shadow: 0 8px 25px rgba(244, 67, 54, 0.4);
+        }
+        50% {
+            transform: scale(1.05);
+            box-shadow: 0 12px 35px rgba(244, 67, 54, 0.6);
+        }
+    }
+
+    .page-title {
+        color: var(--error);
+        font-size: 2.2em;
+        font-weight: 700;
+        margin-bottom: 20px;
+        text-align: center;
+    }
+
+    .warning-message {
+        color: var(--text-primary);
+        font-size: 1.3em;
+        line-height: 1.6;
+        margin-bottom: 25px;
+        text-align: center;
+    }
+
+    .destination-highlight {
+        background: linear-gradient(135deg, var(--error) 0%, var(--error-light) 100%);
+        color: var(--white);
+        padding: 10px 20px;
+        border-radius: 15px;
+        font-weight: 700;
+        font-size: 1.4em;
+        display: inline-block;
+        margin: 15px 0;
+        box-shadow: 0 4px 15px rgba(244, 67, 54, 0.3);
+        transform: rotate(-2deg);
+        animation: highlightPulse 3s infinite;
+    }
+
+    @keyframes highlightPulse {
+        0%, 100% {
+            transform: rotate(-2deg) scale(1);
+        }
+        50% {
+            transform: rotate(-2deg) scale(1.02);
+        }
+    }
+
+    .consequences {
+        background: rgba(244, 67, 54, 0.1);
+        border: 2px solid var(--error-light);
+        border-radius: 15px;
+        padding: 20px;
+        margin: 30px 0;
+        text-align: left;
+    }
+
+    .consequences-title {
+        color: var(--error);
+        font-weight: 700;
+        margin-bottom: 15px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 1.1em;
+    }
+
+    .consequences-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .consequences-list li {
+        color: var(--text-primary);
+        margin-bottom: 10px;
+        padding-left: 25px;
+        position: relative;
+        line-height: 1.5;
+    }
+
+    .consequences-list li::before {
+        content: '⚠️';
+        position: absolute;
+        left: 0;
+        top: 2px;
+        font-size: 0.9em;
+    }
+
+    .form-actions {
+        display: flex;
+        gap: 20px;
+        justify-content: center;
+        margin-top: 40px;
+        flex-wrap: wrap;
+    }
+
+    .btn {
+        padding: 16px 35px;
+        border: none;
+        border-radius: 15px;
+        font-weight: 700;
+        font-size: 1.1em;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        min-width: 160px;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .btn::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+        transition: left 0.5s;
+    }
+
+    .btn:hover::before {
+        left: 100%;
+    }
+
+    .btn-danger {
+        background: linear-gradient(135deg, var(--error) 0%, var(--error-light) 100%);
+        color: var(--white);
+        box-shadow: 0 6px 20px rgba(244, 67, 54, 0.4);
+    }
+
+    .btn-danger:hover {
+        background: linear-gradient(135deg, var(--error-light) 0%, var(--error) 100%);
+        transform: translateY(-3px);
+        box-shadow: 0 10px 30px rgba(244, 67, 54, 0.6);
+    }
+
+    .btn-secondary {
+        background: var(--white);
+        color: var(--blue);
+        border: 2px solid var(--blue-light);
+        box-shadow: 0 6px 20px rgba(30, 136, 229, 0.2);
+    }
+
+    .btn-secondary:hover {
+        background: var(--blue-light);
+        color: var(--white);
+        transform: translateY(-3px);
+        box-shadow: 0 10px 30px rgba(30, 136, 229, 0.4);
+    }
+
+    .destination-preview {
+        background: var(--bg-primary);
+        border: 2px solid var(--gray-light);
+        border-radius: 12px;
+        padding: 20px;
+        margin: 25px 0;
+        text-align: left;
+    }
+
+    .preview-title {
+        color: var(--text-secondary);
+        font-weight: 600;
+        margin-bottom: 15px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 1em;
+    }
+
+    .preview-content {
+        display: flex;
+        gap: 20px;
+        align-items: flex-start;
+    }
+
+    .preview-image {
+        width: 100px;
+        height: 80px;
+        border-radius: 8px;
+        object-fit: cover;
+        border: 2px solid var(--gold);
+    }
+
+    .preview-details {
+        flex: 1;
+    }
+
+    .preview-details h4 {
+        color: var(--text-primary);
+        margin: 0 0 8px 0;
+        font-size: 1.2em;
+    }
+
+    .preview-details p {
+        color: var(--text-secondary);
+        margin: 0;
+        font-size: 0.95em;
+        line-height: 1.4;
+    }
+
+    .no-image {
+        width: 100px;
+        height: 80px;
+        background: linear-gradient(135deg, var(--gray-light) 0%, var(--gold-light) 100%);
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--navy);
+        font-size: 1.5em;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .delete-confirmation-container {
+            padding: 20px 15px;
+        }
+
+        .confirmation-card {
+            padding: 40px 25px;
+        }
+
+        .page-title {
+            font-size: 1.8em;
+        }
+
+        .warning-message {
+            font-size: 1.1em;
+        }
+
+        .form-actions {
+            flex-direction: column;
+        }
+
+        .btn {
+            width: 100%;
+        }
+
+        .preview-content {
+            flex-direction: column;
+            text-align: center;
+        }
+
+        .preview-image, .no-image {
+            align-self: center;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .confirmation-card {
+            padding: 30px 20px;
+        }
+
+        .page-title {
+            font-size: 1.6em;
+        }
+
+        .warning-icon {
+            width: 70px;
+            height: 70px;
+            font-size: 2em;
+        }
+
+        .destination-highlight {
+            font-size: 1.2em;
+            padding: 8px 16px;
+        }
+    }
+</style>
+
+<div class="delete-confirmation-container">
+    <div class="confirmation-card">
+        <!-- Warning Icon -->
+        <div class="warning-icon">
+            <i class="fas fa-exclamation-triangle"></i>
+        </div>
+
+        <!-- Page Title -->
+        <h1 class="page-title">Delete Destination</h1>
+
+        <!-- Warning Message -->
+        <div class="warning-message">
+            You are about to permanently delete a destination from the system.
+        </div>
+
+        <!-- Destination Name Highlight -->
+        <div class="destination-highlight">
+            {{ destination.name }}
+        </div>
+
+        <!-- Destination Preview -->
+        <div class="destination-preview">
+            <div class="preview-title">
+                <i class="fas fa-eye"></i>
+                Destination Preview
+            </div>
+            <div class="preview-content">
+                {% if destination.image %}
+                    <img src="{{ destination.image.url }}" 
+                         alt="{{ destination.name }}" 
+                         class="preview-image"
+                         onerror="this.style.display='none'">
+                {% else %}
+                    <div class="no-image">
+                        <i class="fas fa-mountain"></i>
+                    </div>
+                {% endif %}
+                <div class="preview-details">
+                    <h4>{{ destination.name }}</h4>
+                    <p>{{ destination.description|truncatechars:120|default:"No description available" }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Consequences Warning -->
+        <div class="consequences">
+            <div class="consequences-title">
+                <i class="fas fa-radiation"></i>
+                This action cannot be undone and will:
+            </div>
+            <ul class="consequences-list">
+                <li>Permanently remove this destination from the system</li>
+                <li>Delete all associated travel packages</li>
+                <li>Remove destination from user wishlists</li>
+                <li>Affect any existing bookings related to this destination</li>
+            </ul>
+        </div>
+
+        <!-- Confirmation Form -->
+        <form method="POST" id="deleteForm">
+            {% csrf_token %}
+            <div class="form-actions">
+                <button type="submit" class="btn btn-danger">
+                    <i class="fas fa-trash"></i>
+                    Yes, Delete Permanently
+                </button>
+                <a href="{% url 'manage_destinations' %}" class="btn btn-secondary">
+                    <i class="fas fa-times"></i>
+                    Cancel
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const deleteForm = document.getElementById('deleteForm');
+        const deleteBtn = deleteForm.querySelector('.btn-danger');
+        
+        // Add confirmation on submit
+        deleteForm.addEventListener('submit', function(e) {
+            // Double confirmation for safety
+            const confirmed = confirm('⚠️ FINAL WARNING: This will permanently delete "' + 
+                                    '{{ destination.name }}' + 
+                                    '" and all associated data. This action cannot be undone!\n\n' +
+                                    'Click OK to confirm permanent deletion.');
+            
+            if (!confirmed) {
+                e.preventDefault();
+                return;
+            }
+            
+            // Show loading state
+            if (deleteBtn) {
+                deleteBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Deleting...';
+                deleteBtn.disabled = true;
+                
+                // Add shake animation to indicate final warning
+                deleteBtn.style.animation = 'shake 0.5s ease-in-out';
+                setTimeout(() => {
+                    deleteBtn.style.animation = '';
+                }, 500);
+            }
+        });
+
+        // Add shake animation keyframes
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes shake {
+                0%, 100% { transform: translateX(0); }
+                25% { transform: translateX(-5px); }
+                75% { transform: translateX(5px); }
+            }
+        `;
+        document.head.appendChild(style);
+
+        // Add escape key to cancel
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                window.location.href = "{% url 'manage_destinations' %}";
+            }
+        });
+
+        // Add click outside to think twice
+        document.addEventListener('click', function(e) {
+            if (e.target.classList.contains('delete-confirmation-container')) {
+                const cancelBtn = document.querySelector('.btn-secondary');
+                if (cancelBtn) {
+                    cancelBtn.style.animation = 'pulse 0.5s ease-in-out';
+                    setTimeout(() => {
+                        cancelBtn.style.animation = '';
+                    }, 500);
+                }
+            }
+        });
+    });
+</script>
+
+{% endblock %}

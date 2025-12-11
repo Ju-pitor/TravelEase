@@ -1,0 +1,1028 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<style>
+    :root {
+        --blue: #1E88E5;
+        --blue-light: #42A5F5;
+        --blue-dark: #1565C0;
+        --navy: #0D47A1;
+        --gold: #F4B400;
+        --gold-light: #FFD54F;
+        --gold-dark: #F9A825;
+        --white: #FFFFFF;
+        --gray-light: #F5F7FA;
+    }
+
+    .page-header {
+        position: absolute;
+        top: 40%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 15;
+        text-align: center;
+    }
+
+    .page-header h2 {
+        margin: 0;
+        font-size: 3.5em;
+        font-weight: 700;
+        text-shadow: 4px 4px 8px rgba(0, 0, 0, 0.8);
+        color: var(--white);
+        letter-spacing: 2px;
+    }
+
+    .page-header p {
+        margin: 15px 0 0 0;
+        font-size: 1.3em;
+        color: var(--white);
+        text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.8);
+        font-weight: 500;
+    }
+
+    /* Carousel Styles - Full Width */
+    .carousel-container {
+        position: relative;
+        width: 100vw;
+        margin: 0;
+        margin-left: calc(-50vw + 50%);
+        overflow: hidden;
+        box-shadow: 0 8px 30px rgba(30, 136, 229, 0.2);
+        height: 500px;
+    }
+
+    .carousel-wrapper {
+        display: flex;
+        transition: transform 0.5s ease-in-out;
+    }
+
+    .carousel-slide {
+        min-width: 100%;
+        position: relative;
+        height: 500px;
+    }
+
+    .carousel-slide img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .carousel-overlay {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: linear-gradient(to top, rgba(0, 0, 0, 0.7), transparent);
+        padding: 30px 40px;
+        color: var(--white);
+    }
+
+    .carousel-overlay h3 {
+        margin: 0 0 8px 0;
+        font-size: 1.6em;
+        color: var(--gold-light);
+    }
+
+    .carousel-overlay p {
+        margin: 0;
+        font-size: 1em;
+    }
+
+    .carousel-nav {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        background: rgba(255, 255, 255, 0.9);
+        color: var(--blue);
+        border: none;
+        padding: 15px 20px;
+        cursor: pointer;
+        font-size: 1.5em;
+        font-weight: bold;
+        transition: all 0.3s ease;
+        z-index: 10;
+    }
+
+    .carousel-nav:hover {
+        background: var(--gold);
+        color: var(--white);
+    }
+
+    .carousel-nav.prev {
+        left: 20px;
+        border-radius: 0 8px 8px 0;
+    }
+
+    .carousel-nav.next {
+        right: 20px;
+        border-radius: 8px 0 0 8px;
+    }
+
+    .carousel-dots {
+        position: absolute;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        gap: 10px;
+        z-index: 10;
+    }
+
+    .carousel-dot {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.5);
+        border: 2px solid var(--white);
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .carousel-dot.active {
+        background: var(--gold);
+        width: 30px;
+        border-radius: 6px;
+    }
+
+    /* Container for content below carousel */
+    .content-wrapper {
+        max-width: 1400px;
+        margin: 40px auto 0;
+        padding: 0 30px;
+    }
+
+    /* Filter and Content Layout */
+    .main-container {
+        display: flex;
+        gap: 30px;
+        align-items: flex-start;
+        margin-top: 40px;
+    }
+
+    .filter-container {
+        background: var(--card-bg);
+        padding: 20px;
+        border-radius: 12px;
+        box-shadow: 0 4px 15px var(--shadow);
+        border: 2px solid var(--blue-light);
+        width: 260px;
+        flex-shrink: 0;
+        position: sticky;
+        top: 20px;
+    }
+
+    .filter-title {
+        color: var(--blue-dark);
+        font-size: 1.2em;
+        margin: 0 0 15px 0;
+        padding-bottom: 12px;
+        border-bottom: 2px solid var(--gold);
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .filter-form {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .filter-group {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+    }
+
+    .filter-label {
+        display: block;
+        color: var(--text-secondary);
+        font-weight: 600;
+        font-size: 0.85em;
+        margin-bottom: 3px;
+    }
+
+    .content-area {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .filter-form select,
+    .filter-form input {
+        padding: 10px 12px;
+        border: 2px solid var(--blue-light);
+        border-radius: 8px;
+        font-size: 13px;
+        transition: all 0.3s ease;
+        background: var(--bg-primary);
+        color: var(--text-primary);
+        width: 100%;
+    }
+
+    .filter-form select:focus,
+    .filter-form input:focus {
+        outline: none;
+        border-color: var(--gold);
+        box-shadow: 0 0 0 3px rgba(244, 180, 0, 0.1);
+    }
+
+    .btn-filter {
+        padding: 10px 20px;
+        background: linear-gradient(135deg, var(--blue) 0%, var(--blue-light) 100%);
+        color: var(--white);
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 10px rgba(30, 136, 229, 0.4);
+        width: 100%;
+        font-size: 14px;
+    }
+
+    .btn-filter:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 15px rgba(30, 136, 229, 0.6);
+        background: linear-gradient(135deg, var(--blue-light) 0%, var(--blue) 100%);
+    }
+
+    .btn-clear {
+        padding: 10px 20px;
+        background: var(--white);
+        color: var(--blue);
+        text-decoration: none;
+        border-radius: 8px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        display: block;
+        text-align: center;
+        width: 100%;
+        font-size: 14px;
+        border: 2px solid var(--blue-light);
+    }
+
+    .btn-clear:hover {
+        background: var(--blue-light);
+        color: var(--white);
+        transform: translateY(-2px);
+    }
+
+    .section-title {
+        color: var(--navy);
+        font-size: 1.8em;
+        margin-bottom: 25px;
+        padding-bottom: 10px;
+        border-bottom: 3px solid var(--gold);
+        display: inline-block;
+    }
+
+    .card-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 25px;
+        margin-top: 20px;
+    }
+
+    .destination-card,
+    .package-card {
+        background: var(--card-bg);
+        border: 2px solid var(--blue-light);
+        border-radius: 15px;
+        padding: 0;
+        overflow: hidden;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px var(--shadow);
+    }
+
+    .destination-card:hover,
+    .package-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 12px 30px rgba(30, 136, 229, 0.25);
+        border-color: var(--gold);
+    }
+
+    .card-image {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+        border-bottom: 3px solid var(--gold);
+    }
+
+    .card-image-placeholder {
+        width: 100%;
+        height: 200px;
+        background: linear-gradient(135deg, var(--gray-light) 0%, var(--gold-light) 100%);
+        border-bottom: 3px solid var(--gold);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--navy);
+        font-weight: 600;
+    }
+
+    .card-content {
+        padding: 20px;
+    }
+
+    .card-content h3 {
+        color: var(--text-primary);
+        margin: 0 0 15px 0;
+        font-size: 1.5em;
+    }
+
+    .card-content h3 a {
+        color: var(--text-primary);
+        text-decoration: none;
+        transition: color 0.3s ease;
+    }
+
+    .card-content h3 a:hover {
+        color: var(--blue);
+    }
+
+    .card-info {
+        margin: 10px 0;
+        color: var(--text-secondary);
+        font-size: 0.95em;
+    }
+
+    .card-info strong {
+        color: var(--navy);
+    }
+
+    .price-tag {
+        background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%);
+        color: var(--navy);
+        font-size: 1.3em;
+        font-weight: 700;
+        padding: 8px 15px;
+        border-radius: 8px;
+        display: inline-block;
+        margin: 10px 0;
+    }
+
+    .rating {
+        color: var(--gold);
+        font-size: 1.1em;
+        margin: 10px 0;
+    }
+
+    .btn-link {
+        display: inline-block;
+        padding: 10px 20px;
+        background: var(--blue);
+        color: var(--white);
+        text-decoration: none;
+        border-radius: 8px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        margin-top: 10px;
+    }
+
+    .btn-link:hover {
+        background: var(--blue-dark);
+        transform: translateX(5px);
+    }
+
+    .btn-wishlist {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 10px;
+        background: transparent;
+        color: #E74C3C;
+        text-decoration: none;
+        border: none;
+        border-radius: 50%;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        margin-top: 10px;
+        font-size: 1.8em;
+        width: 45px;
+        height: 45px;
+        cursor: pointer;
+    }
+
+    .btn-wishlist:hover {
+        transform: scale(1.2);
+    }
+
+    .btn-wishlist.disabled {
+        cursor: not-allowed;
+        opacity: 0.5;
+    }
+
+    .btn-wishlist.disabled:hover {
+        transform: none;
+    }
+
+    /* Wishlist heart styles */
+    .wishlist-heart {
+        position: relative;
+        width: 24px;
+        height: 24px;
+    }
+
+    /* Outline heart (not added to wishlist) */
+    .wishlist-heart-outline {
+        color: #E74C3C;
+        stroke: #E74C3C;
+        stroke-width: 2;
+        fill: none;
+    }
+
+    /* Filled heart (added to wishlist) */
+    .wishlist-heart-filled {
+        color: #E74C3C;
+        fill: #E74C3C;
+        animation: heartBeat 0.3s ease;
+    }
+
+    @keyframes heartBeat {
+        0%, 100% { transform: scale(1); }
+        50% { transform: scale(1.3); }
+    }
+
+    .no-results {
+        text-align: center;
+        padding: 60px 20px;
+        background: var(--bg-secondary);
+        border-radius: 15px;
+        color: var(--text-primary);
+        font-size: 1.2em;
+    }
+
+    @media (max-width: 768px) {
+        .page-header h2 {
+            font-size: 1.8em;
+        }
+
+        .page-header {
+            padding: 20px 30px;
+        }
+
+        .page-header p {
+            font-size: 1em;
+        }
+
+        .carousel-container {
+            height: 350px;
+        }
+
+        .carousel-slide {
+            height: 350px;
+        }
+
+        .carousel-overlay h3 {
+            font-size: 1.3em;
+        }
+
+        .carousel-nav {
+            padding: 10px 15px;
+            font-size: 1.2em;
+        }
+
+        .content-wrapper {
+            padding: 0 15px;
+        }
+
+        .main-container {
+            flex-direction: column;
+        }
+
+        .filter-container {
+            width: 100%;
+            position: static;
+        }
+
+        .card-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    /* Heart styles */
+    .wishlist-heart-outline {
+        color: #888;
+        font-size: 22px;
+        transition: 0.3s ease;
+    }
+
+    .wishlist-heart-filled {
+        color: red;
+        font-size: 22px;
+        transition: 0.3s ease;
+    }
+
+    /* Center popup fade animation */
+    @keyframes fadeOutCenter {
+        0% { opacity: 1; }
+        70% { opacity: 1; }
+        100% { opacity: 0; }
+    }
+
+    /* Login prompt popup */
+    .login-prompt {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: var(--card-bg);
+        color: var(--text-primary);
+        padding: 25px;
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        z-index: 2000;
+        text-align: center;
+        max-width: 350px;
+        width: 90%;
+        border: 3px solid var(--gold);
+        animation: fadeInScale 0.3s ease;
+    }
+
+    @keyframes fadeInScale {
+        from {
+            opacity: 0;
+            transform: translate(-50%, -50%) scale(0.8);
+        }
+        to {
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1);
+        }
+    }
+
+    .login-prompt h4 {
+        margin: 0 0 15px 0;
+        color: var(--navy);
+        font-size: 1.3em;
+    }
+
+    .login-prompt p {
+        margin: 0 0 20px 0;
+        color: var(--text-secondary);
+        line-height: 1.5;
+    }
+
+    .login-prompt-buttons {
+        display: flex;
+        gap: 10px;
+        justify-content: center;
+    }
+
+    .btn-login-prompt {
+        padding: 10px 20px;
+        border-radius: 8px;
+        font-weight: 600;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        border: none;
+        cursor: pointer;
+        font-size: 0.9em;
+    }
+
+    .btn-login-primary {
+        background: var(--blue);
+        color: var(--white);
+    }
+
+    .btn-login-primary:hover {
+        background: var(--blue-dark);
+        transform: translateY(-2px);
+    }
+
+    .btn-login-secondary {
+        background: transparent;
+        color: var(--text-primary);
+        border: 2px solid var(--blue-light);
+    }
+
+    .btn-login-secondary:hover {
+        background: var(--blue-light);
+        color: var(--white);
+    }
+
+    .overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 1999;
+        animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+</style>
+
+<!-- Featured Destinations Carousel - Full Width -->
+<div class="carousel-container">
+    <div class="page-header">
+        <h2>Discover Your Next Adventure</h2>
+        <p>Explore amazing destinations around the world</p>
+    </div>
+    
+    <div class="carousel-wrapper" id="carouselWrapper">
+        <!-- Carousel Slide 1 -->
+        <div class="carousel-slide">
+            <img src="https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=1200&h=400&fit=crop" alt="Beach Paradise">
+            <div class="carousel-overlay">
+                <h3>🏖️ Tropical Paradise Awaits</h3>
+                <p>Discover pristine beaches and crystal-clear waters in exotic destinations</p>
+            </div>
+        </div>
+        
+        <!-- Carousel Slide 2 -->
+        <div class="carousel-slide">
+            <img src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1200&h=400&fit=crop" alt="Mountain Adventure">
+            <div class="carousel-overlay">
+                <h3>⛰️ Mountain Adventures</h3>
+                <p>Experience breathtaking peaks and serene mountain landscapes</p>
+            </div>
+        </div>
+        
+        <!-- Carousel Slide 3 -->
+        <div class="carousel-slide">
+            <img src="https://images.unsplash.com/photo-1480714378408-67cf0d13bc1b?w=1200&h=400&fit=crop" alt="City Exploration">
+            <div class="carousel-overlay">
+                <h3>🏙️ Urban Exploration</h3>
+                <p>Immerse yourself in vibrant cities and cultural experiences</p>
+            </div>
+        </div>
+        
+        <!-- Carousel Slide 4 -->
+        <div class="carousel-slide">
+            <img src="https://images.unsplash.com/photo-1511576661531-b34d7da5d0bb?w=1200&h=400&fit=crop" alt="Cultural Journey">
+            <div class="carousel-overlay">
+                <h3>🕌 Cultural Journeys</h3>
+                <p>Explore ancient heritage and timeless traditions around the world</p>
+            </div>
+        </div>
+    </div>
+    
+    <button class="carousel-nav prev" onclick="moveCarousel(-1)">‹</button>
+    <button class="carousel-nav next" onclick="moveCarousel(1)">›</button>
+    
+    <div class="carousel-dots" id="carouselDots"></div>
+</div>
+
+<!-- Content below carousel in container -->
+<div class="content-wrapper">
+<div class="main-container">
+    <!-- Filter Sidebar -->
+    <aside class="filter-container">
+        <h3 class="filter-title">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
+            </svg>
+            Filters
+        </h3>
+        <form method="get" class="filter-form">
+            <div class="filter-group">
+                <label class="filter-label">📍 Destination</label>
+                <select name="destination">
+                    <option value="">All Destinations</option>
+                    {% for dest in destinations %}
+                        <option value="{{ dest.id }}" {% if dest.id|stringformat:"s" == destination %}selected{% endif %}>
+                            {{ dest.name }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label class="filter-label">💰 Price Range</label>
+                <input type="number" name="min_price" placeholder="Min (₹)"
+                       value="{{ min_price|default:'' }}">
+                <input type="number" name="max_price" placeholder="Max (₹)"
+                       value="{{ max_price|default:'' }}">
+            </div>
+
+            <!-- <div class="filter-group">
+                <label class="filter-label">👥 Group Type</label>
+                <select name="type">
+                    <option value="">All Types</option>
+                    <option value="single" {% if selected_type == "single" %}selected{% endif %}>Single</option>
+                    <option value="couple" {% if selected_type == "couple" %}selected{% endif %}>Couple</option>
+                    <option value="friends" {% if selected_type == "friends" %}selected{% endif %}>Friends</option>
+                    <option value="group" {% if selected_type == "group" %}selected{% endif %}>Group</option>
+                </select>
+            </div> -->
+
+            <!-- <div class="filter-group">
+                <label class="filter-label">🌡️ Climate</label>
+                <select name="climate">
+                    <option value="">All Climates</option>
+                    <option value="cold" {% if selected_climate == "cold" %}selected{% endif %}>Cold</option>
+                    <option value="warm" {% if selected_climate == "warm" %}selected{% endif %}>Warm</option>
+                    <option value="tropical" {% if selected_climate == "tropical" %}selected{% endif %}>Tropical</option>
+                </select>
+            </div> -->
+
+            <div class="filter-group">
+                <label class="filter-label">🎯 Activity Type</label>
+                <select name="activity_type">
+                    <option value="">All Activities</option>
+                    <option value="adventure" {% if selected_activity == "adventure" %}selected{% endif %}>Adventure</option>
+                    <option value="relaxation" {% if selected_activity == "relaxation" %}selected{% endif %}>Relaxation</option>
+                    <option value="cultural" {% if selected_activity == "cultural" %}selected{% endif %}>Cultural</option>
+                    <option value="nature" {% if selected_activity == "nature" %}selected{% endif %}>Nature</option>
+                </select>
+            </div>
+           
+            <button type="submit" class="btn-filter">Apply</button>
+            <a href="{% url 'home' %}" class="btn-clear">Clear</a>
+        </form>
+    </aside>
+
+    <!-- Main Content Area -->
+    <div class="content-area">
+
+<!-- If packages exist (filter applied) -->
+{% if packages %}
+    <h3 class="section-title">📦 Filtered Packages</h3>
+    <div class="card-grid">
+        {% for pkg in packages %}
+            <div class="package-card">
+                {% if pkg.image %}
+                    <img src="{{ pkg.image.url }}" alt="{{ pkg.package_name }}" class="card-image">
+                {% else %}
+                    <div class="card-image-placeholder">
+                        <p>📸 No Image</p>
+                    </div>
+                {% endif %}
+                <div class="card-content">
+                    <h3>{{ pkg.package_name }}</h3>
+                    <p class="card-info"><strong>📍 Destination:</strong> {{ pkg.destination.name }}</p>
+                    <div class="price-tag">₹{{ pkg.price }}</div>
+                    <p class="card-info">{{ pkg.description|truncatechars:100 }}</p>
+                    <a href="{% url 'package_detail' pkg.id %}" class="btn-link">View Details →</a>
+                </div>
+            </div>
+        {% empty %}
+            <div class="no-results">
+                <p>🔍 No packages found for your criteria.</p>
+            </div>
+        {% endfor %}
+    </div>
+
+<!-- Else show destinations (default) -->
+{% elif destinations %}
+    <h3 class="section-title">🌟 Available Destinations</h3>
+    <div class="card-grid">
+        {% for dest in destinations %}
+            <div class="destination-card">
+                {% if dest.image %}
+                    <img src="{{ dest.image.url }}" alt="{{ dest.name }}" class="card-image">
+                {% else %}
+                    <div class="card-image-placeholder">
+                        <p>📸 No Image</p>
+                    </div>
+                {% endif %}
+                <div class="card-content">
+                    <h3><a href="{% url 'destination_packages' dest.id %}">{{ dest.name }}</a></h3>
+
+                    {% if dest.avg_rating %}
+                        <p class="rating">⭐ {{ dest.avg_rating|floatformat:1 }}/5</p>
+                    {% else %}
+                        <p class="rating">⭐ No ratings yet</p>
+                    {% endif %}
+                    
+                    <p class="card-info">{{ dest.description|truncatechars:100 }}</p>
+                    
+                    <div style="display: flex; gap: 10px; align-items: center;">
+
+                        <!-- Explore Button -->
+                        <a href="{% url 'destination_packages' dest.id %}" class="btn-link">Explore →</a>
+
+                        <!-- Wishlist Button -->
+                        {% if user.is_authenticated %}
+                            <!-- Authenticated users can add to wishlist -->
+                            <button 
+                                class="btn-wishlist"
+                                onclick="toggleWishlist({{ dest.id }}, '{% url "add_to_wishlist" "destination" dest.id %}')"
+                                title="{% if dest.in_wishlist %}Remove from Wishlist{% else %}Add to Wishlist{% endif %}">
+
+                                {% if dest.in_wishlist %}
+                                    <svg id="heart-{{ dest.id }}" 
+                                        class="wishlist-heart wishlist-heart-filled" 
+                                        viewBox="0 0 24 24">
+                                        <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 
+                                                2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09
+                                                C13.09 3.81 14.76 3 16.5 3C19.58 3 22 5.42 
+                                                22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                                    </svg>
+                                {% else %}
+                                    <svg id="heart-{{ dest.id }}" 
+                                        class="wishlist-heart wishlist-heart-outline" 
+                                        viewBox="0 0 24 24">
+                                        <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 
+                                                2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09
+                                                C13.09 3.81 14.76 3 16.5 3C19.58 3 22 5.42 
+                                                22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                                    </svg>
+                                {% endif %}
+                            </button>
+                        {% else %}
+                            <!-- Non-authenticated users see disabled button with login prompt -->
+                            <button 
+                                class="btn-wishlist disabled"
+                                onclick="showLoginPrompt()"
+                                title="Login to add to wishlist">
+
+                                <svg id="heart-{{ dest.id }}" 
+                                    class="wishlist-heart wishlist-heart-outline" 
+                                    viewBox="0 0 24 24">
+                                    <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 
+                                            2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09
+                                            C13.09 3.81 14.76 3 16.5 3C19.58 3 22 5.42 
+                                            22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                                </svg>
+                            </button>
+                        {% endif %}
+
+                    </div>
+
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <div class="no-results">
+        <p>🌴 No destinations found. Check back soon for amazing travel opportunities!</p>
+    </div>
+{% endif %}
+    </div>
+</div>
+</div>
+
+<script>
+    // Add home-page class to main element
+    document.getElementById('main-content').classList.add('home-page');
+    
+    // Carousel Functionality
+    let currentSlide = 0;
+    const slides = document.querySelectorAll('.carousel-slide');
+    const totalSlides = slides.length;
+    const dotsContainer = document.getElementById('carouselDots');
+    
+    // Create dots
+    for (let i = 0; i < totalSlides; i++) {
+        const dot = document.createElement('div');
+        dot.className = 'carousel-dot';
+        if (i === 0) dot.classList.add('active');
+        dot.onclick = () => goToSlide(i);
+        dotsContainer.appendChild(dot);
+    }
+    
+    function updateCarousel() {
+        const wrapper = document.getElementById('carouselWrapper');
+        wrapper.style.transform = `translateX(-${currentSlide * 100}%)`;
+        
+        // Update dots
+        document.querySelectorAll('.carousel-dot').forEach((dot, index) => {
+            dot.classList.toggle('active', index === currentSlide);
+        });
+    }
+    
+    function moveCarousel(direction) {
+        currentSlide += direction;
+        if (currentSlide < 0) currentSlide = totalSlides - 1;
+        if (currentSlide >= totalSlides) currentSlide = 0;
+        updateCarousel();
+    }
+    
+    function goToSlide(index) {
+        currentSlide = index;
+        updateCarousel();
+    }
+    
+    // Auto-play carousel
+    setInterval(() => {
+        moveCarousel(1);
+    }, 5000);
+
+    // Show login prompt for non-authenticated users
+    function showLoginPrompt() {
+        // Create overlay
+        const overlay = document.createElement('div');
+        overlay.className = 'overlay';
+        
+        // Create login prompt
+        const prompt = document.createElement('div');
+        prompt.className = 'login-prompt';
+        prompt.innerHTML = `
+            <h4>🔒 Login Required</h4>
+            <p>Please log in to add destinations to your wishlist and save your favorite travel spots!</p>
+            <div class="login-prompt-buttons">
+                <a href="{% url 'login' %}" class="btn-login-prompt btn-login-primary">Login Now</a>
+                <button onclick="closeLoginPrompt()" class="btn-login-prompt btn-login-secondary">Maybe Later</button>
+            </div>
+        `;
+        
+        document.body.appendChild(overlay);
+        document.body.appendChild(prompt);
+        
+        // Close on overlay click
+        overlay.onclick = closeLoginPrompt;
+    }
+    
+    function closeLoginPrompt() {
+        const overlay = document.querySelector('.overlay');
+        const prompt = document.querySelector('.login-prompt');
+        
+        if (overlay) overlay.remove();
+        if (prompt) prompt.remove();
+    }
+
+    // Wishlist functionality for authenticated users
+    function toggleWishlist(itemId, url) {
+        const heart = document.getElementById(`heart-${itemId}`);
+        
+        // Toggle heart style immediately for better UX
+        heart.classList.toggle("wishlist-heart-filled");
+        heart.classList.toggle("wishlist-heart-outline");
+
+        // Send AJAX request to add/remove from wishlist
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': getCookie('csrftoken'),
+                'X-Requested-With': 'XMLHttpRequest',
+                'Content-Type': 'application/json',
+            },
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showMessage(data.message || "Wishlist updated! ❤️");
+                
+                // Update tooltip
+                const button = heart.closest('.btn-wishlist');
+                if (heart.classList.contains('wishlist-heart-filled')) {
+                    button.title = "Remove from Wishlist";
+                } else {
+                    button.title = "Add to Wishlist";
+                }
+            } else {
+                // Revert heart if failed
+                heart.classList.toggle("wishlist-heart-filled");
+                heart.classList.toggle("wishlist-heart-outline");
+                showMessage(data.message || "Something went wrong. Please try again.");
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            // Revert heart on error
+            heart.classList.toggle("wishlist-heart-filled");
+            heart.classList.toggle("wishlist-heart-outline");
+            showMessage("Network error. Please try again.");
+        });
+    }
+
+    // Helper function to get CSRF token
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    // Show message popup
+    function showMessage(text) {
+        const msg = document.createElement("div");
+        msg.innerText = text;
+        msg.style.position = "fixed";
+        msg.style.top = "50%";
+        msg.style.left = "50%";
+        msg.style.transform = "translate(-50%, -50%)";
+        msg.style.background = "rgba(0, 0, 0, 0.8)";
+        msg.style.color = "white";
+        msg.style.padding = "12px 20px";
+        msg.style.borderRadius = "10px";
+        msg.style.fontSize = "18px";
+        msg.style.zIndex = "2000";
+        msg.style.animation = "fadeOutCenter 2.5s forwards";
+
+        document.body.appendChild(msg);
+
+        setTimeout(() => {
+            msg.remove();
+        }, 2500);
+    }
+</script>
+
+{% endblock %}

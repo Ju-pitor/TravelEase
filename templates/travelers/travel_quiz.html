@@ -1,0 +1,307 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<style>
+    .quiz-container {
+        max-width: 800px;
+        margin: 0 auto;
+    }
+
+    .quiz-header {
+        background: linear-gradient(135deg, var(--blue-dark) 0%, var(--blue) 100%);
+        color: var(--white);
+        padding: 50px 40px;
+        border-radius: 15px;
+        margin-bottom: 40px;
+        box-shadow: 0 8px 20px rgba(30, 136, 229, 0.3);
+        text-align: center;
+    }
+
+    .quiz-header h2 {
+        margin: 0 0 15px 0;
+        font-size: 2.5em;
+        font-weight: 700;
+    }
+
+    .quiz-header p {
+        margin: 0;
+        font-size: 1.2em;
+        opacity: 0.95;
+    }
+
+    .quiz-form {
+        background: var(--card-bg);
+        padding: 40px;
+        border-radius: 15px;
+        box-shadow: 0 4px 20px var(--shadow);
+        border: 2px solid var(--blue-light);
+    }
+
+    .question-card {
+        background: var(--bg-secondary);
+        padding: 30px;
+        border-radius: 12px;
+        margin-bottom: 30px;
+        border-left: 4px solid var(--gold);
+        transition: all 0.3s ease;
+    }
+
+    .question-card:hover {
+        transform: translateX(5px);
+        box-shadow: 0 4px 15px rgba(30, 136, 229, 0.1);
+    }
+
+    .question-number {
+        display: inline-block;
+        background: var(--gold);
+        color: var(--navy);
+        width: 35px;
+        height: 35px;
+        border-radius: 50%;
+        text-align: center;
+        line-height: 35px;
+        font-weight: 700;
+        margin-right: 10px;
+        box-shadow: 0 3px 10px rgba(244, 180, 0, 0.3);
+    }
+
+    .question-card h4 {
+        color: var(--navy);
+        font-size: 1.4em;
+        margin: 0 0 20px 0;
+        display: flex;
+        align-items: center;
+    }
+
+    .options-container {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        margin-top: 20px;
+    }
+
+    .option-label {
+        display: flex;
+        align-items: center;
+        padding: 15px 20px;
+        background: var(--white);
+        border: 2px solid var(--blue-light);
+        border-radius: 10px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        position: relative;
+    }
+
+    .option-label:hover {
+        border-color: var(--gold);
+        background: var(--gray-light);
+        transform: translateX(5px);
+    }
+
+    .option-label input[type="radio"] {
+        width: 20px;
+        height: 20px;
+        margin-right: 15px;
+        cursor: pointer;
+        accent-color: var(--blue);
+    }
+
+    .option-label input[type="radio"]:checked + .option-text {
+        color: var(--blue);
+        font-weight: 600;
+    }
+
+    .option-label:has(input[type="radio"]:checked) {
+        border-color: var(--blue);
+        background: linear-gradient(to right, rgba(30, 136, 229, 0.05), transparent);
+        box-shadow: 0 4px 15px rgba(30, 136, 229, 0.1);
+    }
+
+    .option-text {
+        flex: 1;
+        color: var(--text-primary);
+        font-size: 1.05em;
+        transition: all 0.3s ease;
+    }
+
+    .submit-button {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        width: 100%;
+        padding: 18px 30px;
+        background: linear-gradient(135deg, var(--blue) 0%, var(--blue-light) 100%);
+        color: var(--white);
+        border: none;
+        border-radius: 12px;
+        font-weight: 700;
+        font-size: 1.2em;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 6px 20px rgba(30, 136, 229, 0.4);
+        margin-top: 20px;
+    }
+
+    .submit-button:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 30px rgba(30, 136, 229, 0.5);
+        background: linear-gradient(135deg, var(--blue-dark) 0%, var(--blue) 100%);
+    }
+
+    .submit-button:active {
+        transform: translateY(-1px);
+    }
+
+    .quiz-progress {
+        background: var(--bg-secondary);
+        padding: 20px;
+        border-radius: 10px;
+        margin-bottom: 30px;
+        text-align: center;
+    }
+
+    .progress-text {
+        color: var(--text-secondary);
+        font-weight: 600;
+        margin-bottom: 10px;
+    }
+
+    .progress-bar-container {
+        background: var(--white);
+        height: 10px;
+        border-radius: 5px;
+        overflow: hidden;
+        box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .progress-bar {
+        height: 100%;
+        background: linear-gradient(90deg, var(--blue) 0%, var(--gold) 100%);
+        width: 0%;
+        transition: width 0.3s ease;
+    }
+
+    @media (max-width: 768px) {
+        .quiz-header {
+            padding: 40px 25px;
+        }
+
+        .quiz-header h2 {
+            font-size: 2em;
+        }
+
+        .quiz-header p {
+            font-size: 1em;
+        }
+
+        .quiz-form {
+            padding: 25px;
+        }
+
+        .question-card {
+            padding: 20px;
+        }
+
+        .question-card h4 {
+            font-size: 1.2em;
+        }
+
+        .option-label {
+            padding: 12px 15px;
+        }
+
+        .submit-button {
+            font-size: 1.1em;
+            padding: 15px 25px;
+        }
+    }
+</style>
+
+<div class="quiz-container">
+    <div class="quiz-header">
+        <h2>✨ Find Your Perfect Trip</h2>
+        <p>Answer a few questions to discover destinations made for you!</p>
+    </div>
+
+    <div class="quiz-progress">
+        <div class="progress-text">Complete all questions to get your personalized recommendations</div>
+        <div class="progress-bar-container">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
+    </div>
+
+    <form method="post" class="quiz-form" id="quizForm">
+        {% csrf_token %}
+        
+        {% for q in questions %}
+        <div class="question-card">
+            <h4>
+                <span class="question-number">{{ forloop.counter }}</span>
+                {{ q.text }}
+            </h4>
+            <div class="options-container">
+                {% for option in q.options %}
+                <label class="option-label">
+                    <input type="radio" name="q{{ q.id }}" value="{{ option }}" required>
+                    <span class="option-text">{{ option }}</span>
+                </label>
+                {% endfor %}
+            </div>
+        </div>
+        {% endfor %}
+
+        <button type="submit" class="submit-button">
+            <i class="fas fa-compass"></i>
+            Get My Recommendations
+        </button>
+    </form>
+</div>
+
+<script>
+    // Progress bar functionality
+    const form = document.getElementById('quizForm');
+    const progressBar = document.getElementById('progressBar');
+    const questions = document.querySelectorAll('.question-card');
+    const totalQuestions = questions.length;
+
+    // Update progress when radio buttons are selected
+    form.addEventListener('change', function(e) {
+        if (e.target.type === 'radio') {
+            updateProgress();
+        }
+    });
+
+    function updateProgress() {
+        let answeredQuestions = 0;
+        questions.forEach(question => {
+            const radios = question.querySelectorAll('input[type="radio"]');
+            const isAnswered = Array.from(radios).some(radio => radio.checked);
+            if (isAnswered) {
+                answeredQuestions++;
+            }
+        });
+        
+        const percentage = (answeredQuestions / totalQuestions) * 100;
+        progressBar.style.width = percentage + '%';
+    }
+
+    // Initialize progress on page load
+    updateProgress();
+
+    // Add smooth scroll to next question after selection
+    document.querySelectorAll('input[type="radio"]').forEach(radio => {
+        radio.addEventListener('change', function() {
+            const currentCard = this.closest('.question-card');
+            const nextCard = currentCard.nextElementSibling;
+            
+            if (nextCard && nextCard.classList.contains('question-card')) {
+                setTimeout(() => {
+                    nextCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }, 300);
+            }
+        });
+    });
+</script>
+
+{% endblock %}

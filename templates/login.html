@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Login</title>
+
+<style>
+/* Center alignment of full page */
+body {
+  margin: 0;
+  padding: 0;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f3f4f6;   /* Light gray modern background */
+  font-family: Arial, sans-serif;
+}
+
+/* Form styling */
+.form {
+  background-color: #fff;
+  padding: 2rem;
+  width: 100%;
+  max-width: 350px;
+  border-radius: 0.75rem;
+  box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+}
+
+.form-title {
+  font-size: 1.3rem;
+  font-weight: 600;
+  text-align: center;
+  margin-bottom: 1rem;
+  color: #111827;
+}
+
+.input-container {
+  margin-bottom: 1rem;
+}
+
+.input-container input {
+  width: 100%;
+  padding: 0.9rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.5rem;
+  font-size: 0.9rem;
+  background: white;
+  outline: none;
+  box-sizing: border-box;
+}
+
+.submit {
+  width: 100%;
+  padding: 0.9rem;
+  background-color: #4F46E5;
+  color: white;
+  border: none;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.submit:hover {
+  background-color: #4338CA;
+}
+
+.signup-link {
+  text-align: center;
+  margin-top: 1rem;
+  font-size: 0.9rem;
+  color: #6B7280;
+}
+
+.signup-link a {
+  text-decoration: none;
+  color: #4F46E5;
+  font-weight: 500;
+}
+</style>
+
+</head>
+<body>
+
+<form class="form" method="post">
+  {% csrf_token %}
+  <p class="form-title">Sign in to your account</p>
+
+  <div class="input-container">
+    <input type="text" name="username" placeholder="Enter username" required>
+  </div>
+
+  <div class="input-container">
+    <input type="password" name="password" placeholder="Enter password" required>
+  </div>
+
+  <button type="submit" class="submit">Sign in</button>
+
+  <p class="signup-link">
+    No account?
+    <a href="{% url 'register_traveler' %}">Sign up</a>
+  </p>
+</form>
+
+
+{% for message in messages %}
+  <p style="color: red; text-align:center;">{{ message }}</p>
+{% endfor %}
+
+</body>
+</html>

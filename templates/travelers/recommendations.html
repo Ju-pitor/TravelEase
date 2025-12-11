@@ -1,0 +1,115 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<style>
+    .recommend-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+        gap: 25px;
+        margin-top: 25px;
+    }
+
+    .recommend-card {
+        background: var(--card-bg, #ffffff);
+        padding: 0;
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        border: 1px solid rgba(0,0,0,0.05);
+        transition: transform .25s ease, box-shadow .25s ease;
+    }
+
+    .recommend-card:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+    }
+
+    .card-image {
+        width: 100%;
+        height: 160px;
+        object-fit: cover;
+    }
+
+    .card-body {
+        padding: 16px 18px;
+    }
+
+    .recommend-card h3 {
+        margin-bottom: 10px;
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: var(--text-dark, #111827);
+    }
+
+    .recommend-card p {
+        margin: 6px 0;
+        font-size: 0.95rem;
+        color: var(--text-medium, #4b5563);
+    }
+
+    .recommend-btn {
+        display: inline-block;
+        margin-top: 12px;
+        padding: 10px 14px;
+        background: #2563eb;
+        color: white;
+        border-radius: 8px;
+        text-decoration: none;
+        font-size: 0.9rem;
+        transition: background .2s ease;
+    }
+
+    .recommend-btn:hover {
+        background: #1e4ecf;
+    }
+
+    .recommend-title {
+        font-size: 1.8rem;
+        font-weight: bold;
+        margin-bottom: 10px;
+    }
+
+    .empty-message {
+        padding: 40px;
+        text-align: center;
+        font-size: 1.1rem;
+        color: #6b7280;
+    }
+</style>
+
+<h2 class="recommend-title">🌍 Your Personalized Travel Picks</h2>
+
+{% if recommendations %}
+    <div class="recommend-container">
+
+        {% for pkg in recommendations %}
+            <div class="recommend-card">
+
+                {% if pkg.image %}
+                    <img src="{{ pkg.image.url }}" alt="{{ pkg.package_name }}" class="card-image">
+                {% else %}
+                    <img src="https://via.placeholder.com/300x200?text=No+Image" class="card-image">
+                {% endif %}
+
+                <div class="card-body">
+                    <h3>{{ pkg.package_name }}</h3>
+
+                    <p><strong>Destination:</strong> {{ pkg.destination.name }}</p>
+                    <p><strong>Price:</strong> ₹{{ pkg.price }}</p>
+
+                    <a class="recommend-btn" href="{% url 'package_detail' pkg.id %}">
+                        View Package →
+                    </a>
+                </div>
+
+            </div>
+        {% endfor %}
+
+    </div>
+{% else %}
+    <div class="empty-message">
+        No matching packages found. Try the quiz again!
+    </div>
+{% endif %}
+
+{% endblock %}

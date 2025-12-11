@@ -1,0 +1,105 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<style>
+    .edit-container {
+        max-width: 650px;
+        margin: 40px auto;
+        padding: 30px;
+        background: #ffffff;
+        border-radius: 18px;
+        border-left: 5px solid #6366f1; /* Cool indigo */
+        box-shadow: 0 6px 25px rgba(0, 0, 0, 0.1);
+        transition: 0.3s ease;
+    }
+
+    .edit-container:hover {
+        box-shadow: 0 10px 35px rgba(0, 0, 0, 0.15);
+    }
+
+    h2 {
+        text-align: center;
+        font-size: 1.8rem;
+        font-weight: 600;
+        margin-bottom: 25px;
+        color: #374151;
+    }
+
+    /* form styling */
+    form p label {
+        font-weight: 600;
+        color: #4b5563;
+    }
+
+    form p input,
+    form p textarea,
+    form p select {
+        width: 100%;
+        padding: 10px;
+        margin-top: 6px;
+        border: 1px solid #d1d5db;
+        border-radius: 8px;
+        background: #f9fafb;
+        transition: 0.2s ease;
+    }
+
+    form p input:focus,
+    form p textarea:focus,
+    form p select:focus {
+        border-color: #6366f1;
+        background: #ffffff;
+        box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.25);
+        outline: none;
+    }
+
+    /* save button */
+    .save-btn {
+        width: 100%;
+        padding: 12px;
+        margin-top: 20px;
+        background: linear-gradient(135deg, #6366f1, #4f46e5);
+        border: none;
+        border-radius: 10px;
+        color: white;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: 0.3s ease;
+    }
+
+    .save-btn:hover {
+        background: linear-gradient(135deg, #4f46e5, #4338ca);
+        transform: translateY(-2px);
+    }
+
+    /* error box */
+    .error-box {
+        background: #fee2e2;
+        color: #b91c1c;
+        padding: 12px;
+        border-radius: 8px;
+        margin-bottom: 15px;
+        font-size: 0.9rem;
+    }
+</style>
+
+<div class="edit-container">
+
+    <h2>{{ form.instance.id|yesno:"Edit Package,Add Package" }}</h2>
+
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        {% if form.errors %}
+        <div class="error-box">
+            {{ form.errors }}
+        </div>
+        {% endif %}
+
+        {{ form.as_p }}
+
+        <button type="submit" class="save-btn">Save</button>
+    </form>
+</div>
+
+{% endblock %}

@@ -1,0 +1,147 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<style>
+    :root {
+        --blue: #1E3A8A;
+        --gold: #FBBF24;
+        --white: #FFFFFF;
+        --light-blue: #F0F4FF;
+        --border: #D1D5DB;
+    }
+
+    .agency-header {
+        background: var(--light-blue);
+        padding: 20px;
+        border-radius: 10px;
+        border-left: 6px solid var(--blue);
+        margin-bottom: 25px;
+    }
+
+    .agency-header h2 {
+        margin-bottom: 8px;
+        color: var(--blue);
+        font-weight: 700;
+    }
+
+    .agency-header p {
+        margin: 5px 0;
+        font-size: 15px;
+    }
+
+    .package-section-title {
+        color: var(--blue);
+        font-weight: bold;
+        margin: 25px 0 15px;
+    }
+
+    .package-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+    }
+
+    .pkg-card {
+        width: 260px;
+        background: var(--white);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+        padding: 12px;
+        transition: 0.3s ease;
+    }
+
+    .pkg-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 6px 14px rgba(0,0,0,0.1);
+    }
+
+    .pkg-card h3 {
+        margin: 10px 0 5px;
+        color: var(--blue);
+        font-size: 18px;
+        font-weight: 600;
+    }
+
+    .pkg-card p {
+        margin: 5px 0;
+        font-size: 14px;
+    }
+
+    .pkg-img {
+        width: 100%;
+        height: 150px;
+        object-fit: cover;
+        border-radius: 10px;
+        border: 1px solid var(--border);
+    }
+
+    .pkg-link {
+        display: inline-block;
+        margin-top: 10px;
+        padding: 8px 12px;
+        font-size: 14px;
+        background: var(--blue);
+        color: var(--white);
+        border-radius: 6px;
+        text-decoration: none;
+        transition: 0.3s ease;
+    }
+
+    .pkg-link:hover {
+        background: var(--gold);
+        color: var(--blue);
+    }
+
+    .no-img-box {
+        width: 100%;
+        height: 150px;
+        background: var(--light-blue);
+        border-radius: 10px;
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        color: #555;
+        font-size: 14px;
+        border: 1px solid var(--border);
+    }
+</style>
+
+<div class="agency-header">
+    <h2>{{ agency.agency_name }}</h2>
+    <p><strong>Registration No:</strong> {{ agency.registration_number }}</p>
+    {% if agency.contact_email %}
+        <p><strong>Email:</strong> {{ agency.contact_email }}</p>
+    {% endif %}
+    {% if agency.phone_number %}
+        <p><strong>Phone:</strong> {{ agency.phone_number }}</p>
+    {% endif %}
+</div>
+
+<h3 class="package-section-title">Packages by this Agency</h3>
+
+{% if agency.packages.all %}
+    <div class="package-container">
+        {% for pkg in agency.packages.all %}
+            <div class="pkg-card">
+                
+                {% if pkg.image %}
+                    <img src="{{ pkg.image.url }}" class="pkg-img" alt="{{ pkg.package_name }}">
+                {% else %}
+                    <div class="no-img-box">No Image</div>
+                {% endif %}
+
+                <h3>{{ pkg.package_name }}</h3>
+                <p><strong>Destination:</strong> {{ pkg.destination.name }}</p>
+                <p><strong>Price:</strong> ₹{{ pkg.price }}</p>
+                <p>{{ pkg.description|truncatechars:80 }}</p>
+
+                <a href="{% url 'package_detail' pkg.id %}" class="pkg-link">View Details</a>
+            </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <p>No packages available for this agency.</p>
+{% endif %}
+
+{% endblock %}

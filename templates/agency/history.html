@@ -1,0 +1,117 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<style>
+    :root {
+        --blue: #1E3A8A;
+        --gold: #FBBF24;
+        --white: #FFFFFF;
+        --light-blue: #F0F4FF;
+        --border: #D1D5DB;
+        --gray-text: #4B5563;
+    }
+
+    .page-title {
+        color: var(--blue);
+        font-weight: 700;
+        margin-bottom: 20px;
+        font-size: 28px;
+    }
+
+    .history-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 15px;
+        background: var(--white);
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+
+    .history-table th {
+        background: var(--blue);
+        color: var(--white);
+        padding: 14px;
+        font-size: 15px;
+        font-weight: 600;
+        text-align: left;
+    }
+
+    .history-table td {
+        padding: 12px;
+        color: var(--gray-text);
+        border-bottom: 1px solid var(--border);
+        font-size: 14px;
+    }
+
+    .history-table tr:hover {
+        background: var(--light-blue);
+    }
+
+    .status-done {
+        color: green;
+        font-weight: 600;
+    }
+
+    .status-rejected {
+        color: #EF4444;
+        font-weight: 600;
+    }
+
+    .no-history {
+        color: var(--gray-text);
+        background: var(--light-blue);
+        padding: 12px 15px;
+        border-radius: 8px;
+        margin-top: 10px;
+        font-size: 15px;
+    }
+</style>
+
+<h2 class="page-title">✔ Trip History</h2>
+
+{% if history %}
+<table class="history-table">
+    <thead>
+        <tr>
+            <th>Traveler</th>
+            <th>Package</th>
+            <th>Status</th>
+            <th>Date</th>
+            <th>Amount</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        {% for booking in history %}
+        <tr>
+            <td>{{ booking.traveler.username }}</td>
+            <td>{{ booking.package.package_name }}</td>
+
+            <td>
+                {% if booking.status == "Completed" %}
+                    <span class="status-done">✔ Completed</span>
+                {% else %}
+                    <span class="status-rejected">❌ Rejected</span>
+                {% endif %}
+            </td>
+
+            <td>
+                {% if booking.completed_at %}
+                    {{ booking.completed_at|date:"d M Y, h:i A" }}
+                {% else %}
+                    {{ booking.rejected_at|date:"d M Y, h:i A" }}
+                {% endif %}
+            </td>
+
+            <td>₹{{ booking.package.price }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% else %}
+<p class="no-history">No completed or rejected trips yet.</p>
+{% endif %}
+
+{% endblock %}

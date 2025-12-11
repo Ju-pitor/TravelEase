@@ -1,0 +1,516 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<style>
+    .bookings-header {
+        background: linear-gradient(135deg, var(--blue-dark) 0%, var(--blue) 100%);
+        color: var(--white);
+        padding: 40px 30px;
+        border-radius: 15px;
+        margin-bottom: 40px;
+        box-shadow: 0 8px 20px rgba(30, 136, 229, 0.3);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .bookings-header h2 {
+        margin: 0;
+        font-size: 2.2em;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .refresh-indicator {
+        background: rgba(255, 255, 255, 0.2);
+        padding: 10px 20px;
+        border-radius: 20px;
+        font-size: 0.9em;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .refresh-icon {
+        animation: spin 2s linear infinite;
+    }
+
+    @keyframes spin {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+    }
+
+    .bookings-container {
+        background: var(--card-bg);
+        border-radius: 15px;
+        box-shadow: 0 4px 20px var(--shadow);
+        overflow: hidden;
+        border: 2px solid var(--blue-light);
+    }
+
+    .table-wrapper {
+        overflow-x: auto;
+    }
+    
+    .table-wrapper::-webkit-scrollbar {
+        display: none;
+    }
+    
+    .table-wrapper {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+
+    .bookings-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .bookings-table thead {
+        background: linear-gradient(135deg, var(--navy) 0%, var(--blue-dark) 100%);
+        color: var(--white);
+    }
+
+    .bookings-table th {
+        padding: 18px 15px;
+        text-align: left;
+        font-weight: 700;
+        font-size: 0.95em;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .bookings-table tbody tr {
+        border-bottom: 1px solid rgba(30, 136, 229, 0.1);
+        transition: all 0.3s ease;
+    }
+
+    .bookings-table tbody tr:hover {
+        background: var(--bg-secondary);
+        transform: scale(1.01);
+    }
+
+    .bookings-table td {
+        padding: 20px 15px;
+        color: var(--text-primary);
+    }
+
+    .package-name {
+        font-weight: 700;
+        color: var(--navy);
+        font-size: 1.1em;
+    }
+
+    .date-cell {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: var(--text-secondary);
+    }
+
+    .people-badge {
+        background: var(--blue-light);
+        color: var(--white);
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .status-badge {
+        padding: 8px 16px;
+        border-radius: 20px;
+        font-weight: 700;
+        font-size: 0.9em;
+        display: inline-block;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .status-pending {
+        background: linear-gradient(135deg, #FFA726 0%, #FB8C00 100%);
+        color: var(--white);
+    }
+
+    .status-confirmed {
+        background: linear-gradient(135deg, #66BB6A 0%, #43A047 100%);
+        color: var(--white);
+    }
+
+    .status-paid {
+        background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%);
+        color: var(--navy);
+    }
+
+    .status-rejected {
+        background: linear-gradient(135deg, #EF5350 0%, #E53935 100%);
+        color: var(--white);
+    }
+
+    .status-checked-in {
+        background: linear-gradient(135deg, #26A69A 0%, #00897B 100%);
+        color: var(--white);
+    }
+
+    .actions-cell {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .btn {
+        padding: 10px 18px;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        border: none;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        justify-content: center;
+        font-size: 0.9em;
+    }
+
+    .btn-pay {
+        background: linear-gradient(135deg, var(--blue) 0%, var(--blue-light) 100%);
+        color: var(--white);
+        box-shadow: 0 4px 10px rgba(30, 136, 229, 0.3);
+    }
+
+    .btn-pay:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 15px rgba(30, 136, 229, 0.4);
+    }
+
+    .btn-receipt {
+        background: var(--gold);
+        color: var(--navy);
+        box-shadow: 0 4px 10px rgba(244, 180, 0, 0.3);
+    }
+
+    .btn-receipt:hover {
+        background: var(--gold-light);
+        transform: translateY(-2px);
+    }
+
+    .btn-download {
+        background: var(--navy);
+        color: var(--white);
+    }
+
+    .btn-download:hover {
+        background: var(--blue-dark);
+        transform: translateY(-2px);
+    }
+
+    .btn-checkin {
+        background: linear-gradient(135deg, #66BB6A 0%, #43A047 100%);
+        color: var(--white);
+        box-shadow: 0 4px 10px rgba(102, 187, 106, 0.3);
+    }
+
+    .btn-checkin:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 15px rgba(102, 187, 106, 0.4);
+    }
+
+    .btn-chat {
+        background: var(--white);
+        color: var(--blue);
+        border: 2px solid var(--blue-light);
+    }
+
+    .btn-chat:hover {
+        background: var(--blue-light);
+        color: var(--white);
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 80px 20px;
+        color: var(--text-secondary);
+    }
+
+    .empty-state-icon {
+        font-size: 4em;
+        color: var(--blue-light);
+        margin-bottom: 20px;
+    }
+
+    .empty-state h3 {
+        color: var(--navy);
+        font-size: 1.8em;
+        margin-bottom: 10px;
+    }
+
+    .empty-state p {
+        font-size: 1.1em;
+        margin-bottom: 30px;
+    }
+
+    .btn-browse {
+        background: linear-gradient(135deg, var(--blue) 0%, var(--blue-light) 100%);
+        color: var(--white);
+        padding: 15px 30px;
+        border-radius: 10px;
+        text-decoration: none;
+        font-weight: 700;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        box-shadow: 0 6px 20px rgba(30, 136, 229, 0.4);
+    }
+
+    .btn-browse:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 30px rgba(30, 136, 229, 0.5);
+    }
+
+    .status-actions {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        align-items: flex-start;
+    }
+
+    @media (max-width: 1024px) {
+        .bookings-table {
+            font-size: 0.9em;
+        }
+
+        .bookings-table th,
+        .bookings-table td {
+            padding: 12px 10px;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .bookings-header {
+            flex-direction: column;
+            gap: 15px;
+            text-align: center;
+        }
+
+        .bookings-header h2 {
+            font-size: 1.8em;
+        }
+
+        .bookings-table {
+            display: block;
+            width: 100%;
+        }
+
+        .bookings-table thead {
+            display: none;
+        }
+
+        .bookings-table tbody {
+            display: block;
+        }
+
+        .bookings-table tr {
+            display: block;
+            margin-bottom: 20px;
+            background: var(--bg-secondary);
+            border-radius: 12px;
+            padding: 15px;
+            border: 2px solid var(--blue-light);
+        }
+
+        .bookings-table td {
+            display: block;
+            padding: 10px 0;
+            border: none;
+            text-align: left;
+        }
+
+        .bookings-table td::before {
+            content: attr(data-label);
+            font-weight: 700;
+            color: var(--navy);
+            display: block;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            font-size: 0.85em;
+        }
+
+        .actions-cell {
+            width: 100%;
+        }
+
+        .status-actions {
+            width: 100%;
+        }
+
+        .btn {
+            width: 100%;
+        }
+    }
+</style>
+
+<div class="bookings-header">
+    <h2>
+        <i class="fas fa-clipboard-list"></i>
+        My Bookings
+    </h2>
+    <div class="refresh-indicator">
+        <i class="fas fa-sync-alt refresh-icon"></i>
+        Auto-refreshing
+    </div>
+</div>
+
+<div class="bookings-container">
+    {% if bookings %}
+    <div class="table-wrapper">
+        <table class="bookings-table" id="bookingTable">
+            <thead>
+                <tr>
+                    <th><i class="fas fa-suitcase"></i> Package</th>
+                    <th><i class="fas fa-calendar-plus"></i> Booking Date</th>
+                    <th><i class="fas fa-calendar-day"></i> Travel Date</th>
+                    <th><i class="fas fa-users"></i> People</th>
+                    <th><i class="fas fa-info-circle"></i> Status</th>
+                    <th><i class="fas fa-tasks"></i> Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+
+                {% for booking in bookings %}
+                <tr data-id="{{ booking.id }}">
+                    <td data-label="Package">
+                        <div class="package-name">{{ booking.package.package_name }}</div>
+                    </td>
+                    <td data-label="Booking Date">
+                        <div class="date-cell">
+                            <i class="fas fa-calendar"></i>
+                            {{ booking.booking_date|date:"M d, Y" }}
+                        </div>
+                    </td>
+                    <td data-label="Travel Date">
+                        <div class="date-cell">
+                            <i class="fas fa-plane-departure"></i>
+                            {{ booking.travel_date|date:"M d, Y" }}
+                        </div>
+                    </td>
+                    <td data-label="People">
+                        <span class="people-badge">
+                            <i class="fas fa-user"></i>
+                            {{ booking.number_of_people }}
+                        </span>
+                    </td>
+                    <td data-label="Status">
+                        <div class="status-actions">
+                            <span class="status-badge status-{{ booking.status|lower }}" data-booking-id="{{ booking.id }}">
+                                {{ booking.status }}
+                                
+
+                            </span>
+                            <a href="{% url 'cancel_booking' booking.id %}"><button onclick="return confirm('Are you sure? No refund will be provided. Contact agency for issues.');">
+                                    Cancel Booking
+                                </button></a>
+                            {% if booking.status == "Paid" %}
+                                <a href="{% url 'view_receipt' booking.id %}" class="btn btn-receipt">
+                                    <i class="fas fa-file-invoice"></i> View Receipt
+                                </a>
+                                <a href="{% url 'download_receipt' booking.id %}" target="_blank" class="btn btn-download">
+                                    <i class="fas fa-download"></i> Download
+                                </a>
+                                <form action="{% url 'check_in' booking.id %}" method="POST" style="width: 100%;">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-checkin" style="width: 100%;">
+                                        <i class="fas fa-check-circle"></i> Check In
+                                    </button>
+                                </form>
+                            {% endif %}
+                        </div>
+                    </td>
+                    <td data-label="Actions">
+                        <div class="actions-cell">
+                            {% if booking.status == 'Confirmed' or booking.status == 'Paid' %}
+                                {% if booking.status == 'Confirmed' %}
+                                    <a href="{% url 'payment_page' booking.id %}" class="btn btn-pay">
+                                        <i class="fas fa-credit-card"></i> Proceed to Pay
+                                    </a>
+                                {% endif %}
+                                <a href="{% url 'chat' booking.id %}" class="btn btn-chat">
+                                    <i class="fas fa-comments"></i> Chat with Agency
+                                </a>
+                            {% endif %}
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="empty-state">
+        <div class="empty-state-icon">
+            <i class="fas fa-calendar-times"></i>
+        </div>
+        <h3>No Bookings Yet</h3>
+        <p>Start your journey by browsing our amazing travel packages!</p>
+        <a href="{% url 'view_packages' %}" class="btn-browse">
+            <i class="fas fa-search"></i>
+            Browse Packages
+        </a>
+    </div>
+    {% endif %}
+</div>
+
+<script>
+async function refreshBookingStatus() {
+    try {
+        const response = await fetch("{% url 'get_latest_booking_status' %}");
+        const data = await response.json();
+
+        data.bookings.forEach(b => {
+            // Update status badge
+            const statusBadge = document.querySelector(`span[data-booking-id='${b.id}']`);
+            if (statusBadge) {
+                statusBadge.textContent = b.status;
+                
+                // Remove old status class
+                statusBadge.className = 'status-badge';
+                
+                // Add new status class
+                const statusClass = 'status-' + b.status.toLowerCase();
+                statusBadge.classList.add(statusClass);
+                
+                // Add animation
+                statusBadge.style.animation = 'heartBeat 0.5s ease';
+                setTimeout(() => {
+                    statusBadge.style.animation = '';
+                }, 500);
+            }
+        });
+        
+        console.log('✅ Booking statuses updated');
+    } catch (error) {
+        console.error("Error updating statuses:", error);
+    }
+}
+
+// Initial refresh after 2 seconds
+setTimeout(refreshBookingStatus, 2000);
+
+// Refresh every 10 seconds
+setInterval(refreshBookingStatus, 10000);
+
+// Visual feedback for refresh
+let refreshIcon = document.querySelector('.refresh-icon');
+setInterval(() => {
+    refreshIcon.style.animation = 'none';
+    setTimeout(() => {
+        refreshIcon.style.animation = 'spin 1s ease-in-out';
+    }, 10);
+}, 10000);
+</script>
+
+{% endblock %}

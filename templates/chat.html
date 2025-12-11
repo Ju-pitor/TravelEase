@@ -1,0 +1,151 @@
+<body>
+
+<style>
+    :root {
+        --blue: #2563eb;
+        --blue-light: #dbeafe;
+        --user-msg: #2563eb;
+        --other-msg: #e5e7eb;
+        --text-light: #ffffff;
+        --text-dark: #1f2937;
+        --bg: #f8fafc;
+        --border: #d1d5db;
+    }
+
+    body {
+        font-family: "Segoe UI", sans-serif;
+        background: var(--bg);
+        margin: 0;
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        height: 100vh;
+        box-sizing: border-box;
+    }
+
+    .chat-title {
+        font-size: 22px;
+        font-weight: bold;
+        margin-bottom: 15px;
+        color: var(--text-dark);
+    }
+
+    /* CHAT BOX */
+    .chat-box {
+        flex: 1;
+        background: white;
+        border: 1px solid var(--border);
+        border-radius: 15px;
+        padding: 15px;
+        overflow-y: auto;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        margin-bottom: 15px;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .message-wrapper {
+        width: 100%;
+        display: flex;
+    }
+
+    .msg {
+        max-width: 70%;
+        padding: 10px 14px;
+        border-radius: 12px;
+        font-size: 14px;
+        line-height: 1.4;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+
+    .msg-user {
+        background: var(--blue);
+        color: var(--text-light);
+        margin-left: auto;
+    }
+
+    .msg-other {
+        background: var(--other-msg);
+        color: var(--text-dark);
+        margin-right: auto;
+    }
+
+    .timestamp {
+        display: block;
+        margin-top: 4px;
+        font-size: 11px;
+        opacity: 0.7;
+    }
+
+    /* INPUT AREA */
+    .chat-form {
+        display: flex;
+        gap: 10px;
+    }
+
+    .chat-input {
+        flex: 1;
+        padding: 12px 14px;
+        border-radius: 10px;
+        border: 1px solid var(--border);
+        font-size: 14px;
+        outline: none;
+    }
+
+    .send-btn {
+        padding: 12px 20px;
+        background: var(--blue);
+        color: white;
+        border: none;
+        border-radius: 10px;
+        cursor: pointer;
+        font-weight: 600;
+    }
+
+    .send-btn:hover {
+        background: #1d4ed8;
+    }
+
+    .back-btn {
+        margin-top: 12px;
+        display: inline-block;
+        text-decoration: none;
+        color: var(--blue);
+        font-weight: 600;
+    }
+</style>
+
+<h2 class="chat-title">💬 Chat Box</h2>
+
+<div class="chat-box" id="chatBox">
+    {% for msg in messages %}
+        <div class="message-wrapper">
+            <div class="msg {% if msg.sender == user %}msg-user{% else %}msg-other{% endif %}">
+                <strong>{{ msg.sender.username }}</strong><br>
+                {{ msg.message }}
+                <span class="timestamp">{{ msg.timestamp }}</span>
+            </div>
+        </div>
+    {% empty %}
+        <p style="text-align:center; color:gray;">No messages yet.</p>
+    {% endfor %}
+</div>
+
+<form method="POST" class="chat-form">
+    {% csrf_token %}
+    <input type="text" name="message" class="chat-input" placeholder="Type a message..." required>
+    <button type="submit" class="send-btn">Send</button>
+</form>
+
+<a href="/" class="back-btn">← Back to Home</a>
+
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const chatBox = document.getElementById("chatBox");
+        if (chatBox) chatBox.scrollTop = chatBox.scrollHeight;
+    });
+</script>
+
+</body>

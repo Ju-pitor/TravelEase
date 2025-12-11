@@ -1,0 +1,402 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<style>
+    .success-container {
+        max-width: 700px;
+        margin: 0 auto;
+        text-align: center;
+    }
+
+    .success-animation {
+        margin-bottom: 30px;
+    }
+
+    .success-icon {
+        width: 120px;
+        height: 120px;
+        background: linear-gradient(135deg, #66BB6A 0%, #43A047 100%);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 30px;
+        animation: scaleIn 0.5s ease;
+        box-shadow: 0 10px 40px rgba(102, 187, 106, 0.4);
+    }
+
+    .success-icon i {
+        color: var(--white);
+        font-size: 4em;
+        animation: checkmark 0.8s ease 0.3s;
+    }
+
+    @keyframes scaleIn {
+        0% {
+            transform: scale(0);
+            opacity: 0;
+        }
+        50% {
+            transform: scale(1.1);
+        }
+        100% {
+            transform: scale(1);
+            opacity: 1;
+        }
+    }
+
+    @keyframes checkmark {
+        0% {
+            transform: scale(0) rotate(-45deg);
+            opacity: 0;
+        }
+        100% {
+            transform: scale(1) rotate(0deg);
+            opacity: 1;
+        }
+    }
+
+    .success-header {
+        margin-bottom: 40px;
+    }
+
+    .success-header h2 {
+        color: var(--navy);
+        font-size: 2.5em;
+        font-weight: 700;
+        margin: 0 0 15px 0;
+    }
+
+    .success-header p {
+        color: var(--text-secondary);
+        font-size: 1.2em;
+        margin: 0;
+    }
+
+    .success-card {
+        background: var(--card-bg);
+        border-radius: 15px;
+        box-shadow: 0 4px 20px var(--shadow);
+        border: 2px solid var(--blue-light);
+        padding: 40px;
+        margin-bottom: 30px;
+    }
+
+    .booking-summary {
+        background: var(--bg-secondary);
+        padding: 25px;
+        border-radius: 12px;
+        margin-bottom: 30px;
+        border-left: 4px solid var(--gold);
+    }
+
+    .booking-summary h3 {
+        color: var(--navy);
+        font-size: 1.4em;
+        margin: 0 0 20px 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+    }
+
+    .summary-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 12px 0;
+        border-bottom: 1px solid rgba(30, 136, 229, 0.1);
+    }
+
+    .summary-row:last-child {
+        border-bottom: none;
+    }
+
+    .summary-label {
+        color: var(--text-secondary);
+        font-weight: 600;
+    }
+
+    .summary-value {
+        color: var(--text-primary);
+        font-weight: 700;
+    }
+
+    .status-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%);
+        color: var(--navy);
+        padding: 12px 24px;
+        border-radius: 25px;
+        font-weight: 700;
+        font-size: 1.1em;
+        margin: 20px 0;
+        box-shadow: 0 4px 15px rgba(244, 180, 0, 0.3);
+    }
+
+    .next-steps {
+        background: linear-gradient(135deg, var(--blue-dark) 0%, var(--blue) 100%);
+        color: var(--white);
+        padding: 30px;
+        border-radius: 12px;
+        margin-bottom: 30px;
+    }
+
+    .next-steps h3 {
+        margin: 0 0 20px 0;
+        font-size: 1.3em;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+    }
+
+    .steps-list {
+        text-align: left;
+        max-width: 500px;
+        margin: 0 auto;
+    }
+
+    .step-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 15px;
+        margin-bottom: 15px;
+        padding: 15px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 8px;
+    }
+
+    .step-number {
+        width: 35px;
+        height: 35px;
+        background: var(--gold);
+        color: var(--navy);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        flex-shrink: 0;
+    }
+
+    .step-text {
+        flex: 1;
+        padding-top: 5px;
+    }
+
+    .action-buttons {
+        display: flex;
+        gap: 15px;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .btn {
+        padding: 15px 30px;
+        border-radius: 10px;
+        text-decoration: none;
+        font-weight: 700;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 1.05em;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, var(--blue) 0%, var(--blue-light) 100%);
+        color: var(--white);
+        box-shadow: 0 6px 20px rgba(30, 136, 229, 0.4);
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 30px rgba(30, 136, 229, 0.5);
+    }
+
+    .btn-secondary {
+        background: var(--white);
+        color: var(--blue);
+        border: 2px solid var(--blue-light);
+    }
+
+    .btn-secondary:hover {
+        background: var(--blue-light);
+        color: var(--white);
+        border-color: var(--blue);
+    }
+
+    .btn-receipt {
+        background: var(--gold);
+        color: var(--navy);
+        box-shadow: 0 6px 20px rgba(244, 180, 0, 0.4);
+    }
+
+    .btn-receipt:hover {
+        background: var(--gold-light);
+        transform: translateY(-3px);
+    }
+
+    .confetti {
+        position: fixed;
+        width: 10px;
+        height: 10px;
+        background: var(--gold);
+        position: absolute;
+        animation: confetti-fall 3s ease-out forwards;
+    }
+
+    @keyframes confetti-fall {
+        to {
+            transform: translateY(100vh) rotate(360deg);
+            opacity: 0;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .success-header h2 {
+            font-size: 2em;
+        }
+
+        .success-icon {
+            width: 100px;
+            height: 100px;
+        }
+
+        .success-icon i {
+            font-size: 3em;
+        }
+
+        .action-buttons {
+            flex-direction: column;
+        }
+
+        .btn {
+            width: 100%;
+            justify-content: center;
+        }
+
+        .summary-row {
+            flex-direction: column;
+            gap: 5px;
+        }
+    }
+</style>
+
+<div class="success-container">
+    <div class="success-animation">
+        <div class="success-icon">
+            <i class="fas fa-check"></i>
+        </div>
+    </div>
+
+    <div class="success-header">
+        <h2>🎉 Payment Successful!</h2>
+        <p>Your booking has been confirmed</p>
+    </div>
+
+    <div class="success-card">
+        <div class="booking-summary">
+            <h3>
+                <i class="fas fa-suitcase"></i>
+                Booking Details
+            </h3>
+            <div class="summary-row">
+                <span class="summary-label">Package</span>
+                <span class="summary-value">{{ booking.package.package_name }}</span>
+            </div>
+            <div class="summary-row">
+                <span class="summary-label">Destination</span>
+                <span class="summary-value">{{ booking.package.destination.name }}</span>
+            </div>
+            <div class="summary-row">
+                <span class="summary-label">Travel Date</span>
+                <span class="summary-value">{{ booking.travel_date|date:"M d, Y" }}</span>
+            </div>
+            <div class="summary-row">
+                <span class="summary-label">Number of People</span>
+                <span class="summary-value">{{ booking.number_of_people }}</span>
+            </div>
+            <div class="summary-row">
+                <span class="summary-label">Amount Paid</span>
+                <span class="summary-value">₹{{ total_amount }}</span>
+            </div>
+        </div>
+
+        <div class="status-badge">
+            <i class="fas fa-check-circle"></i>
+            Status: {{ booking.status }}
+        </div>
+
+        <p style="color: var(--text-secondary); margin: 20px 0;">
+            A confirmation email has been sent to your registered email address.
+        </p>
+    </div>
+
+    <div class="next-steps">
+        <h3>
+            <i class="fas fa-route"></i>
+            What's Next?
+        </h3>
+        <div class="steps-list">
+            <div class="step-item">
+                <div class="step-number">1</div>
+                <div class="step-text">Check your email for booking confirmation and receipt</div>
+            </div>
+            <div class="step-item">
+                <div class="step-number">2</div>
+                <div class="step-text">Download your receipt for your records</div>
+            </div>
+            <div class="step-item">
+                <div class="step-number">3</div>
+                <div class="step-text">Check-in before your travel date</div>
+            </div>
+            <div class="step-item">
+                <div class="step-number">4</div>
+                <div class="step-text">Contact the agency if you have any questions</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="action-buttons">
+        <a href="{% url 'download_receipt' booking.id %}" class="btn btn-receipt">
+            <i class="fas fa-download"></i>
+            Download Receipt
+        </a>
+        <a href="{% url 'traveler_bookings' %}" class="btn btn-secondary">
+            <i class="fas fa-clipboard-list"></i>
+            View My Bookings
+        </a>
+        <a href="{% url 'traveler_dashboard' %}" class="btn btn-primary">
+            <i class="fas fa-home"></i>
+            Back to Dashboard
+        </a>
+    </div>
+</div>
+
+<script>
+    // Create confetti effect
+    function createConfetti() {
+        const colors = ['#1E88E5', '#F4B400', '#66BB6A', '#42A5F5', '#FFD54F'];
+        for (let i = 0; i < 50; i++) {
+            setTimeout(() => {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.left = Math.random() * window.innerWidth + 'px';
+                confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.animationDelay = Math.random() * 0.5 + 's';
+                confetti.style.animationDuration = (Math.random() * 2 + 2) + 's';
+                document.body.appendChild(confetti);
+                
+                setTimeout(() => confetti.remove(), 3000);
+            }, i * 30);
+        }
+    }
+    
+    // Trigger confetti on page load
+    window.addEventListener('load', createConfetti);
+</script>
+
+{% endblock %}

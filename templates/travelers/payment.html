@@ -1,0 +1,445 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<style>
+    .payment-container {
+        max-width: 700px;
+        margin: 0 auto;
+    }
+
+    .payment-header {
+        background: linear-gradient(135deg, var(--blue-dark) 0%, var(--blue) 100%);
+        color: var(--white);
+        padding: 40px 30px;
+        border-radius: 15px;
+        margin-bottom: 30px;
+        box-shadow: 0 8px 20px rgba(30, 136, 229, 0.3);
+        text-align: center;
+    }
+
+    .payment-header h2 {
+        margin: 0 0 10px 0;
+        font-size: 2em;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 15px;
+    }
+
+    .payment-header p {
+        margin: 0;
+        opacity: 0.9;
+        font-size: 1.1em;
+    }
+
+    .payment-card {
+        background: var(--card-bg);
+        border-radius: 15px;
+        box-shadow: 0 4px 20px var(--shadow);
+        overflow: hidden;
+        border: 2px solid var(--blue-light);
+        margin-bottom: 30px;
+    }
+
+    .package-banner {
+        background: linear-gradient(135deg, var(--navy) 0%, var(--blue-dark) 100%);
+        color: var(--white);
+        padding: 25px 30px;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .package-icon {
+        font-size: 2.5em;
+        color: var(--gold);
+    }
+
+    .package-info h3 {
+        margin: 0 0 5px 0;
+        font-size: 1.5em;
+        font-weight: 700;
+    }
+
+    .package-info p {
+        margin: 0;
+        opacity: 0.9;
+    }
+
+    .payment-details {
+        padding: 30px;
+    }
+
+    .detail-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 18px 0;
+        border-bottom: 1px solid rgba(30, 136, 229, 0.1);
+    }
+
+    .detail-row:last-child {
+        border-bottom: none;
+    }
+
+    .detail-label {
+        color: var(--text-secondary);
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 1.05em;
+    }
+
+    .detail-value {
+        color: var(--text-primary);
+        font-weight: 700;
+        font-size: 1.1em;
+    }
+
+    .price-row {
+        background: var(--bg-secondary);
+        padding: 25px 30px;
+        margin: 0 -30px -30px -30px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .price-label {
+        font-size: 1.3em;
+        font-weight: 700;
+        color: var(--navy);
+    }
+
+    .price-amount {
+        font-size: 2.5em;
+        font-weight: 700;
+        background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .payment-actions {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .btn-pay {
+        width: 100%;
+        padding: 18px 30px;
+        background: linear-gradient(135deg, var(--blue) 0%, var(--blue-light) 100%);
+        color: var(--white);
+        border: none;
+        border-radius: 12px;
+        font-weight: 700;
+        font-size: 1.2em;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 6px 20px rgba(30, 136, 229, 0.4);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+    }
+
+    .btn-pay:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 30px rgba(30, 136, 229, 0.5);
+    }
+
+    .btn-pay:active {
+        transform: translateY(-1px);
+    }
+
+    .btn-pay.processing {
+        background: linear-gradient(135deg, #90CAF9 0%, #64B5F6 100%);
+        cursor: not-allowed;
+    }
+
+    .btn-cancel {
+        width: 100%;
+        padding: 15px 30px;
+        background: var(--white);
+        color: var(--text-secondary);
+        border: 2px solid var(--blue-light);
+        border-radius: 10px;
+        font-weight: 600;
+        font-size: 1em;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+    }
+
+    .btn-cancel:hover {
+        background: var(--bg-secondary);
+        border-color: var(--blue);
+    }
+
+    .security-info {
+        background: var(--bg-secondary);
+        border-radius: 10px;
+        padding: 20px;
+        margin-top: 20px;
+        border-left: 4px solid var(--gold);
+    }
+
+    .security-info h4 {
+        margin: 0 0 10px 0;
+        color: var(--navy);
+        font-size: 1.1em;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .security-info p {
+        margin: 0;
+        color: var(--text-secondary);
+        font-size: 0.95em;
+        line-height: 1.6;
+    }
+
+    .payment-methods {
+        display: flex;
+        justify-content: center;
+        gap: 15px;
+        margin-top: 20px;
+        flex-wrap: wrap;
+    }
+
+    .payment-method-icon {
+        width: 50px;
+        height: 35px;
+        background: var(--white);
+        border: 2px solid var(--blue-light);
+        border-radius: 6px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--blue);
+        font-size: 1.2em;
+        transition: all 0.3s ease;
+    }
+
+    .payment-method-icon:hover {
+        border-color: var(--gold);
+        transform: scale(1.1);
+    }
+
+    .spinner {
+        display: inline-block;
+        width: 20px;
+        height: 20px;
+        border: 3px solid rgba(255, 255, 255, 0.3);
+        border-radius: 50%;
+        border-top-color: var(--white);
+        animation: spin 1s ease-in-out infinite;
+    }
+
+    @keyframes spin {
+        to { transform: rotate(360deg); }
+    }
+
+    @media (max-width: 768px) {
+        .payment-header h2 {
+            font-size: 1.6em;
+        }
+
+        .package-banner {
+            flex-direction: column;
+            text-align: center;
+        }
+
+        .price-row {
+            flex-direction: column;
+            gap: 10px;
+            text-align: center;
+        }
+
+        .price-amount {
+            font-size: 2em;
+        }
+
+        .detail-row {
+            flex-direction: column;
+            gap: 8px;
+            align-items: flex-start;
+        }
+    }
+</style>
+
+<div class="payment-container">
+    <div class="payment-header">
+        <h2>
+            <i class="fas fa-lock"></i>
+            Secure Payment
+        </h2>
+        <p>Complete your booking with confidence</p>
+    </div>
+
+    <div class="payment-card">
+        <div class="package-banner">
+            <div class="package-icon">
+                <i class="fas fa-suitcase-rolling"></i>
+            </div>
+            <div class="package-info">
+                <h3>{{ booking.package.package_name }}</h3>
+                <p><i class="fas fa-map-marker-alt"></i> {{ booking.package.destination.name }}</p>
+            </div>
+        </div>
+
+        <div class="payment-details">
+            <div class="detail-row">
+                <span class="detail-label">
+                    <i class="fas fa-user"></i>
+                    Traveler
+                </span>
+                <span class="detail-value">{{ booking.traveler.username }}</span>
+            </div>
+
+            <div class="detail-row">
+                <span class="detail-label">
+                    <i class="fas fa-calendar-day"></i>
+                    Travel Date
+                </span>
+                <span class="detail-value">{{ booking.travel_date|date:"M d, Y" }}</span>
+            </div>
+
+            <div class="detail-row">
+                <span class="detail-label">
+                    <i class="fas fa-users"></i>
+                    Number of People
+                </span>
+                <span class="detail-value">{{ booking.number_of_people }}</span>
+            </div>
+
+            <div class="detail-row">
+                <span class="detail-label">
+                    <i class="fas fa-tag"></i>
+                    Price per Person
+                </span>
+                <span class="detail-value">₹{{ booking.package.price }}</span>
+            </div>
+
+            <div class="price-row">
+                <span class="price-label">
+                    <i class="fas fa-receipt"></i> Total Amount
+                </span>
+                <span class="price-amount">₹{{ total_amount }}</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="payment-actions">
+        <button onclick="startPayment()" class="btn-pay" id="payButton">
+            <i class="fas fa-credit-card"></i>
+            Proceed to Pay ₹{{ booking.package.price }}
+        </button>
+
+        <a href="{% url 'traveler_bookings' %}" class="btn-cancel">
+            <i class="fas fa-arrow-left"></i>
+            Back to Bookings
+        </a>
+    </div>
+
+    <div class="security-info">
+        <h4>
+            <i class="fas fa-shield-alt"></i>
+            Secure Payment
+        </h4>
+        <p>Your payment is processed through Razorpay with industry-standard encryption. We never store your card details.</p>
+    </div>
+
+    <div class="payment-methods">
+        <div class="payment-method-icon" title="Credit Card">
+            <i class="fab fa-cc-visa"></i>
+        </div>
+        <div class="payment-method-icon" title="Debit Card">
+            <i class="fab fa-cc-mastercard"></i>
+        </div>
+        <div class="payment-method-icon" title="UPI">
+            <i class="fas fa-mobile-alt"></i>
+        </div>
+        <div class="payment-method-icon" title="Net Banking">
+            <i class="fas fa-university"></i>
+        </div>
+        <div class="payment-method-icon" title="Wallet">
+            <i class="fas fa-wallet"></i>
+        </div>
+    </div>
+</div>
+
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script>
+function startPayment() {
+    const payButton = document.getElementById('payButton');
+    
+    // Disable button and show processing state
+    payButton.disabled = true;
+    payButton.classList.add('processing');
+    payButton.innerHTML = '<span class="spinner"></span> Processing...';
+    
+    var options = {
+        "key": "{{ razorpay_merchant_key }}",
+        "amount": "{{ amount }}",
+        "currency": "{{ currency }}",
+        "name": "WanderWay Travel",
+        "description": "Payment for {{ booking.package.package_name }}",
+        "order_id": "{{ order_id }}",
+        "handler": function (response) {
+            // Show success state
+            payButton.innerHTML = '<i class="fas fa-check-circle"></i> Payment Successful!';
+            
+            fetch("{% url 'payment_success' %}", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded",
+                    "X-CSRFToken": "{{ csrf_token }}"
+                },
+                body: "booking_id={{ booking.id }}"
+            }).then(res => {
+                if (res.ok) {
+                    setTimeout(() => {
+                        window.location.href = "{% url 'payment_success' %}?id={{ booking.id }}";
+                    }, 1000);
+                } else {
+                    alert("Payment processed, but backend update failed!");
+                    payButton.disabled = false;
+                    payButton.classList.remove('processing');
+                    payButton.innerHTML = '<i class="fas fa-credit-card"></i> Proceed to Pay ₹{{ booking.package.price }}';
+                }
+            }).catch(error => {
+                console.error('Error:', error);
+                alert("An error occurred. Please contact support.");
+                payButton.disabled = false;
+                payButton.classList.remove('processing');
+                payButton.innerHTML = '<i class="fas fa-credit-card"></i> Proceed to Pay ₹{{ booking.package.price }}';
+            });
+        },
+        "modal": {
+            "ondismiss": function() {
+                // Re-enable button if payment modal is closed
+                payButton.disabled = false;
+                payButton.classList.remove('processing');
+                payButton.innerHTML = '<i class="fas fa-credit-card"></i> Proceed to Pay ₹{{ booking.package.price }}';
+            }
+        },
+        "theme": { 
+            "color": "#1E88E5" // Blue theme color
+        }
+    };
+    
+    var rzp = new Razorpay(options);
+    rzp.open();
+}
+</script>
+
+{% endblock %}

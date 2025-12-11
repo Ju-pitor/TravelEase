@@ -1,0 +1,560 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<style>
+    :root {
+        --blue: #1E88E5;
+        --blue-light: #42A5F5;
+        --blue-dark: #1565C0;
+        --navy: #0D47A1;
+        --gold: #F4B400;
+        --gold-light: #FFD54F;
+        --gold-dark: #F9A825;
+        --white: #FFFFFF;
+        --gray-light: #F5F7FA;
+        --text-primary: #263238;
+        --text-secondary: #546E7A;
+        --bg-primary: #FFFFFF;
+        --bg-secondary: #F5F7FA;
+        --card-bg: #FFFFFF;
+        --shadow: rgba(30, 136, 229, 0.1);
+        --success: #4CAF50;
+        --error: #F44336;
+    }
+
+    [data-theme="dark"] {
+        --white: #1a1a1a;
+        --gray-light: #2d2d2d;
+        --text-primary: #E3F2FD;
+        --text-secondary: #90CAF9;
+        --bg-primary: #0D1B2A;
+        --bg-secondary: #1B263B;
+        --card-bg: #1B263B;
+        --shadow: rgba(0, 0, 0, 0.3);
+        --blue: #42A5F5;
+        --blue-light: #64B5F6;
+        --navy: #0D47A1;
+    }
+
+    .edit-destination-container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 30px;
+        background: var(--bg-secondary);
+        min-height: calc(100vh - 200px);
+    }
+
+    .page-header {
+        text-align: center;
+        margin-bottom: 40px;
+        position: relative;
+    }
+
+    .page-header h2 {
+        color: var(--navy);
+        font-size: 2.5em;
+        font-weight: 700;
+        margin-bottom: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 15px;
+    }
+
+    .page-header h2::before {
+        content: '✏️';
+        font-size: 1.2em;
+    }
+
+    .destination-name {
+        background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%);
+        color: var(--navy);
+        padding: 8px 20px;
+        border-radius: 25px;
+        font-weight: 700;
+        font-size: 1.1em;
+        display: inline-block;
+        margin-top: 10px;
+        box-shadow: 0 4px 15px rgba(244, 180, 0, 0.3);
+    }
+
+    .form-card {
+        background: var(--card-bg);
+        padding: 40px;
+        border-radius: 20px;
+        box-shadow: 0 8px 30px var(--shadow);
+        border: 3px solid var(--blue-light);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .form-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 5px;
+        background: linear-gradient(135deg, var(--blue) 0%, var(--gold) 50%, var(--blue-light) 100%);
+    }
+
+    .form-group {
+        margin-bottom: 25px;
+        position: relative;
+    }
+
+    .form-group label {
+        display: block;
+        color: var(--text-primary);
+        font-weight: 600;
+        margin-bottom: 8px;
+        font-size: 1.1em;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .form-group label i {
+        color: var(--blue);
+        width: 20px;
+        text-align: center;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 12px 16px;
+        border: 2px solid var(--blue-light);
+        border-radius: 12px;
+        font-size: 1em;
+        transition: all 0.3s ease;
+        background: var(--bg-primary);
+        color: var(--text-primary);
+        font-family: inherit;
+    }
+
+    .form-control:focus {
+        outline: none;
+        border-color: var(--gold);
+        box-shadow: 0 0 0 3px rgba(244, 180, 0, 0.1);
+        transform: translateY(-2px);
+    }
+
+    .form-control::placeholder {
+        color: var(--text-secondary);
+        opacity: 0.7;
+    }
+
+    textarea.form-control {
+        min-height: 120px;
+        resize: vertical;
+        line-height: 1.5;
+    }
+
+    .file-input-wrapper {
+        position: relative;
+        display: inline-block;
+        width: 100%;
+    }
+
+    .file-input-wrapper input[type="file"] {
+        opacity: 0;
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        cursor: pointer;
+    }
+
+    .file-input-custom {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px 16px;
+        border: 2px dashed var(--blue-light);
+        border-radius: 12px;
+        background: var(--bg-primary);
+        color: var(--text-secondary);
+        transition: all 0.3s ease;
+    }
+
+    .file-input-wrapper:hover .file-input-custom {
+        border-color: var(--gold);
+        background: rgba(244, 180, 0, 0.05);
+    }
+
+    .file-input-custom i {
+        color: var(--blue);
+        font-size: 1.2em;
+    }
+
+    .current-image {
+        margin-top: 15px;
+        text-align: center;
+    }
+
+    .current-image img {
+        max-width: 200px;
+        max-height: 150px;
+        border-radius: 12px;
+        border: 3px solid var(--gold);
+        box-shadow: 0 4px 15px var(--shadow);
+    }
+
+    .current-image p {
+        margin-top: 8px;
+        color: var(--text-secondary);
+        font-size: 0.9em;
+    }
+
+    .form-actions {
+        display: flex;
+        gap: 15px;
+        justify-content: center;
+        margin-top: 40px;
+        padding-top: 25px;
+        border-top: 2px solid var(--gray-light);
+    }
+
+    .btn {
+        padding: 14px 30px;
+        border: none;
+        border-radius: 12px;
+        font-weight: 600;
+        font-size: 1.1em;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        min-width: 140px;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, var(--blue) 0%, var(--blue-light) 100%);
+        color: var(--white);
+        box-shadow: 0 4px 15px rgba(30, 136, 229, 0.4);
+    }
+
+    .btn-primary:hover {
+        background: linear-gradient(135deg, var(--blue-light) 0%, var(--blue) 100%);
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(30, 136, 229, 0.6);
+    }
+
+    .btn-secondary {
+        background: var(--white);
+        color: var(--blue);
+        border: 2px solid var(--blue-light);
+        box-shadow: 0 4px 15px rgba(30, 136, 229, 0.2);
+    }
+
+    .btn-secondary:hover {
+        background: var(--blue-light);
+        color: var(--white);
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(30, 136, 229, 0.4);
+    }
+
+    .btn-success {
+        background: linear-gradient(135deg, var(--success) 0%, #66BB6A 100%);
+        color: var(--white);
+        box-shadow: 0 4px 15px rgba(76, 175, 80, 0.4);
+    }
+
+    .btn-success:hover {
+        background: linear-gradient(135deg, #66BB6A 0%, var(--success) 100%);
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(76, 175, 80, 0.6);
+    }
+
+    .form-help {
+        color: var(--text-secondary);
+        font-size: 0.9em;
+        margin-top: 6px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .form-help i {
+        color: var(--gold);
+    }
+
+    .error-message {
+        color: var(--error);
+        font-size: 0.9em;
+        margin-top: 5px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .error-message i {
+        font-size: 0.8em;
+    }
+
+    /* Animation for form elements */
+    .form-group {
+        animation: slideInUp 0.5s ease forwards;
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    .form-group:nth-child(1) { animation-delay: 0.1s; }
+    .form-group:nth-child(2) { animation-delay: 0.2s; }
+    .form-group:nth-child(3) { animation-delay: 0.3s; }
+    .form-group:nth-child(4) { animation-delay: 0.4s; }
+    .form-group:nth-child(5) { animation-delay: 0.5s; }
+
+    @keyframes slideInUp {
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .edit-destination-container {
+            padding: 20px 15px;
+        }
+
+        .page-header h2 {
+            font-size: 2em;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .form-card {
+            padding: 25px 20px;
+        }
+
+        .form-actions {
+            flex-direction: column;
+        }
+
+        .btn {
+            width: 100%;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .page-header h2 {
+            font-size: 1.7em;
+        }
+
+        .form-card {
+            padding: 20px 15px;
+        }
+
+        .form-group label {
+            font-size: 1em;
+        }
+    }
+</style>
+
+<div class="edit-destination-container">
+    <div class="page-header">
+        <h2>Edit Destination</h2>
+        <div class="destination-name">{{ destination.name }}</div>
+    </div>
+
+    <div class="form-card">
+        <form method="POST" enctype="multipart/form-data" id="destinationForm">
+            {% csrf_token %}
+            
+            <!-- Name Field -->
+            <div class="form-group">
+                <label for="id_name">
+                    <i class="fas fa-map-marker-alt"></i>
+                    Destination Name
+                </label>
+                <input type="text" 
+                       name="name" 
+                       id="id_name" 
+                       class="form-control" 
+                       value="{{ form.name.value|default:destination.name }}" 
+                       placeholder="Enter destination name"
+                       required>
+                {% if form.name.errors %}
+                    <div class="error-message">
+                        <i class="fas fa-exclamation-circle"></i>
+                        {{ form.name.errors.0 }}
+                    </div>
+                {% endif %}
+                <div class="form-help">
+                    <i class="fas fa-lightbulb"></i>
+                    Choose a descriptive and attractive name for the destination
+                </div>
+            </div>
+
+            <!-- Description Field -->
+            <div class="form-group">
+                <label for="id_description">
+                    <i class="fas fa-file-alt"></i>
+                    Description
+                </label>
+                <textarea name="description" 
+                          id="id_description" 
+                          class="form-control" 
+                          placeholder="Describe this destination... What makes it special?"
+                          rows="4">{{ form.description.value|default:destination.description }}</textarea>
+                {% if form.description.errors %}
+                    <div class="error-message">
+                        <i class="fas fa-exclamation-circle"></i>
+                        {{ form.description.errors.0 }}
+                    </div>
+                {% endif %}
+                <div class="form-help">
+                    <i class="fas fa-lightbulb"></i>
+                    Write an engaging description that highlights key attractions and experiences
+                </div>
+            </div>
+
+            <!-- Image Field -->
+            <div class="form-group">
+                <label for="id_image">
+                    <i class="fas fa-image"></i>
+                    Destination Image
+                </label>
+                <div class="file-input-wrapper">
+                    <input type="file" 
+                           name="image" 
+                           id="id_image" 
+                           class="form-control" 
+                           accept="image/*">
+                    <div class="file-input-custom">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <span>Choose an image file...</span>
+                    </div>
+                </div>
+                {% if form.image.errors %}
+                    <div class="error-message">
+                        <i class="fas fa-exclamation-circle"></i>
+                        {{ form.image.errors.0 }}
+                    </div>
+                {% endif %}
+                
+                <!-- Current Image Preview -->
+                {% if destination.image %}
+                <div class="current-image">
+                    <p><strong>Current Image:</strong></p>
+                    <img src="{{ destination.image.url }}" 
+                         alt="{{ destination.name }}" 
+                         onerror="this.style.display='none'">
+                    <p>{{ destination.image.name|default:"Current destination image" }}</p>
+                </div>
+                {% endif %}
+                
+                <div class="form-help">
+                    <i class="fas fa-lightbulb"></i>
+                    Recommended: High-quality landscape image, 16:9 aspect ratio, max 5MB
+                </div>
+            </div>
+
+            <!-- Additional Fields (if any) -->
+            {% for field in form %}
+                {% if field.name not in 'name,description,image' %}
+                <div class="form-group">
+                    <label for="id_{{ field.name }}">
+                        <i class="fas fa-tag"></i>
+                        {{ field.label }}
+                    </label>
+                    {{ field }}
+                    {% if field.errors %}
+                        <div class="error-message">
+                            <i class="fas fa-exclamation-circle"></i>
+                            {{ field.errors.0 }}
+                        </div>
+                    {% endif %}
+                    {% if field.help_text %}
+                        <div class="form-help">
+                            <i class="fas fa-lightbulb"></i>
+                            {{ field.help_text }}
+                        </div>
+                    {% endif %}
+                </div>
+                {% endif %}
+            {% endfor %}
+
+            <div class="form-actions">
+                <button type="submit" class="btn btn-success">
+                    <i class="fas fa-save"></i>
+                    Save Changes
+                </button>
+                <a href="{% url 'manage_destinations' %}" class="btn btn-secondary">
+                    <i class="fas fa-times"></i>
+                    Cancel
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // File input preview
+        const fileInput = document.getElementById('id_image');
+        const fileInputCustom = document.querySelector('.file-input-custom span');
+        
+        if (fileInput) {
+            fileInput.addEventListener('change', function(e) {
+                const fileName = e.target.files[0]?.name || 'Choose an image file...';
+                fileInputCustom.textContent = fileName;
+                
+                // Add visual feedback
+                const customDiv = document.querySelector('.file-input-custom');
+                customDiv.style.borderColor = 'var(--gold)';
+                customDiv.style.background = 'rgba(244, 180, 0, 0.1)';
+            });
+        }
+
+        // Form submission animation
+        const form = document.getElementById('destinationForm');
+        if (form) {
+            form.addEventListener('submit', function(e) {
+                const submitBtn = this.querySelector('button[type="submit"]');
+                if (submitBtn) {
+                    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+                    submitBtn.disabled = true;
+                }
+            });
+        }
+
+        // Auto-resize textarea
+        const textarea = document.getElementById('id_description');
+        if (textarea) {
+            textarea.addEventListener('input', function() {
+                this.style.height = 'auto';
+                this.style.height = (this.scrollHeight) + 'px';
+            });
+            
+            // Trigger initial resize
+            setTimeout(() => {
+                textarea.style.height = (textarea.scrollHeight) + 'px';
+            }, 100);
+        }
+
+        // Add character counter for description
+        if (textarea) {
+            const counter = document.createElement('div');
+            counter.className = 'form-help';
+            counter.innerHTML = '<i class="fas fa-text-height"></i> <span id="charCount">0</span> characters';
+            textarea.parentNode.insertBefore(counter, textarea.nextSibling);
+            
+            function updateCounter() {
+                const count = textarea.value.length;
+                document.getElementById('charCount').textContent = count;
+                counter.style.color = count > 500 ? 'var(--gold)' : 'var(--text-secondary)';
+            }
+            
+            textarea.addEventListener('input', updateCounter);
+            updateCounter(); // Initial count
+        }
+    });
+</script>
+
+{% endblock %}

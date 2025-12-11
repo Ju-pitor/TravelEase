@@ -1,0 +1,132 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<style>
+/* Wrapper to center form without affecting the whole website */
+.register-wrapper {
+    display: flex;
+    justify-content: center;
+    margin-top: 40px;
+    margin-bottom: 40px;
+}
+
+/* Card container */
+.form-card {
+    background: white;
+    padding: 2rem;
+    width: 100%;
+    max-width: 450px;
+    border-radius: 12px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+    font-family: Arial, sans-serif;
+}
+
+/* Title */
+.form-card h2 {
+    text-align: center;
+    margin-bottom: 1.5rem;
+    font-size: 1.4rem;
+    font-weight: 600;
+}
+
+/* Label */
+.form-card label {
+    display: block;
+    margin-bottom: 4px;
+    margin-top: 12px;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+/* Input fields */
+.form-card input,
+.form-card select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    background: white;
+    font-size: 0.9rem;
+    box-sizing: border-box;
+}
+
+.form-card input:focus {
+    border-color: #4F46E5;
+    outline: none;
+}
+
+/* Error text */
+.error-text {
+    color: red;
+    font-size: 0.8rem;
+    margin-top: 3px;
+}
+
+/* Submit button */
+.form-card button {
+    margin-top: 20px;
+    width: 100%;
+    padding: 12px;
+    background: #4F46E5;
+    color: white;
+    font-size: 1rem;
+    font-weight: bold;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.form-card button:hover {
+    background: #4338CA;
+}
+</style>
+
+<div class="register-wrapper">
+    <div class="form-card">
+
+        <h2>Agency Registration</h2>
+
+        {% if messages %}
+            {% for message in messages %}
+                <p style="color: green; text-align:center;">{{ message }}</p>
+            {% endfor %}
+        {% endif %}
+
+        {% if form.non_field_errors %}
+            <p style="color:red; text-align:center;">
+                {% for error in form.non_field_errors %}
+                    {{ error }}<br>
+                {% endfor %}
+            </p>
+        {% endif %}
+
+        <form method="POST" novalidate>
+            {% csrf_token %}
+
+            {% for field in form %}
+                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                {{ field }}
+
+                {% if field.errors %}
+                    <div class="error-text">
+                        {% for error in field.errors %}
+                            {{ error }}<br>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% endfor %}
+
+            {% if password_help %}
+                <p style="background:#eef; padding:10px; border-radius:5px;">
+                    <strong>Password Requirements:</strong><br>
+                    {{ password_help }}
+                </p>
+            {% endif %}
+
+            <button type="submit">Register Agency</button>
+        </form>
+    </div>
+</div>
+
+{% endblock %}

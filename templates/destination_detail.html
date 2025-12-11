@@ -1,0 +1,123 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<style>
+    .destination-container {
+        max-width: 900px;
+        margin: 30px auto;
+        background: #ffffff;
+        padding: 25px;
+        border-radius: 16px;
+        box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+    }
+
+    .destination-header {
+        text-align: center;
+        margin-bottom: 25px;
+    }
+
+    .destination-header h2 {
+        font-size: 32px;
+        color: #1f2937;
+        margin-bottom: 10px;
+    }
+
+    .destination-image {
+        width: 100%;
+        max-height: 380px;
+        object-fit: cover;
+        border-radius: 12px;
+        margin-bottom: 20px;
+    }
+
+    .description {
+        font-size: 17px;
+        color: #374151;
+        line-height: 1.6;
+        margin-bottom: 40px;
+    }
+
+    .package-card {
+        background: #f9fafb;
+        border-left: 6px solid #2563eb;
+        padding: 20px;
+        border-radius: 12px;
+        margin-bottom: 18px;
+        transition: 0.2s ease;
+    }
+
+    .package-card:hover {
+        background: #eef2ff;
+        transform: translateY(-3px);
+    }
+
+    .package-title {
+        font-size: 22px;
+        font-weight: 600;
+        color: #1e3a8a;
+        margin-bottom: 8px;
+    }
+
+    .package-info {
+        color: #374151;
+        font-size: 15px;
+        margin-bottom: 6px;
+    }
+
+    .view-btn {
+        display: inline-block;
+        margin-top: 12px;
+        padding: 8px 16px;
+        background: #2563eb;
+        color: white;
+        border-radius: 8px;
+        text-decoration: none;
+        transition: 0.2s ease;
+        font-size: 14px;
+    }
+
+    .view-btn:hover {
+        background: #1e40af;
+    }
+
+    .no-packages {
+        padding: 15px;
+        text-align: center;
+        background: #fff7ed;
+        border-left: 6px solid #f59e0b;
+        border-radius: 12px;
+        color: #b45309;
+        font-size: 16px;
+    }
+</style>
+
+
+<div class="destination-container">
+
+    <div class="destination-header">
+        <h2>{{ destination.name }}</h2>
+        <img src="{{ destination.image.url }}" alt="{{ destination.name }}" class="destination-image">
+    </div>
+
+    <p class="description">{{ destination.description }}</p>
+
+    <h3 style="font-size: 26px; margin-bottom: 18px; color:#1f2937;">Available Packages</h3>
+
+    {% for pkg in packages %}
+        <div class="package-card">
+            <div class="package-title">{{ pkg.package_name }}</div>
+            <div class="package-info">{{ pkg.description }}</div>
+            <div class="package-info"><strong>Price:</strong> ₹{{ pkg.price }}</div>
+            <div class="package-info"><strong>Duration:</strong> {{ pkg.duration }}</div>
+
+            <a href="{% url 'package_detail' pkg.id %}" class="view-btn">View Package →</a>
+        </div>
+    {% empty %}
+        <div class="no-packages">
+            No packages yet for this destination.
+        </div>
+    {% endfor %}
+
+</div>
+
+{% endblock %}

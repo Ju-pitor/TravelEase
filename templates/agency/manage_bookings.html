@@ -1,0 +1,192 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<style>
+    :root {
+        --blue: #1E3A8A;
+        --gold: #FBBF24;
+        --white: #FFFFFF;
+        --light-blue: #F0F4FF;
+        --border: #D1D5DB;
+        --gray-text: #4B5563;
+    }
+
+    .page-title {
+        color: var(--blue);
+        font-weight: 700;
+        margin-bottom: 15px;
+    }
+
+    .history-link a {
+        color: var(--gold);
+        font-size: 16px;
+        text-decoration: none;
+        font-weight: 600;
+    }
+    .history-link a:hover {
+        color: var(--blue);
+    }
+
+    .booking-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+        background: var(--white);
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+
+    .booking-table th {
+        background: var(--blue);
+        padding: 12px;
+        color: var(--white);
+        font-weight: 600;
+        text-align: left;
+        font-size: 15px;
+    }
+
+    .booking-table td {
+        padding: 12px;
+        border-bottom: 1px solid var(--border);
+        color: var(--gray-text);
+    }
+
+    .booking-table tr:hover {
+        background: var(--light-blue);
+    }
+
+    .status-paid {
+        color: green;
+        font-weight: 600;
+    }
+    .status-pending {
+        color: orange;
+        font-weight: 600;
+    }
+    .status-confirmed {
+        color: #2563EB;
+        font-weight: 600;
+    }
+
+    .btn-small {
+        padding: 6px 10px;
+        border-radius: 6px;
+        font-size: 13px;
+        cursor: pointer;
+        border: none;
+        font-weight: 600;
+    }
+
+    .btn-blue {
+        background: var(--blue);
+        color: var(--white);
+    }
+    .btn-blue:hover {
+        background: var(--gold);
+        color: var(--blue);
+    }
+
+    .btn-green {
+        background: #22C55E;
+        color: var(--white);
+    }
+    .btn-green:hover {
+        opacity: 0.9;
+    }
+
+    .btn-red {
+        background: #EF4444;
+        color: var(--white);
+    }
+    .btn-red:hover {
+        opacity: 0.9;
+    }
+
+    .chat-link {
+        color: var(--blue);
+        font-weight: 600;
+        text-decoration: none;
+    }
+    .chat-link:hover {
+        color: var(--gold);
+    }
+
+</style>
+
+<h2 class="page-title">Manage Bookings</h2>
+
+<div class="history-link">
+    <a href="{% url 'agency_history' %}">📜 View History</a>
+</div>
+
+{% if bookings %}
+<table class="booking-table">
+    <tr>
+        <th>Traveler</th>
+        <th>Package</th>
+        <th>Travel Date</th>
+        <th>People</th>
+        <th>Status</th>
+        <th>Actions</th>
+    </tr>
+
+    {% for booking in bookings %}
+    <tr>
+        <td>{{ booking.traveler.username }}</td>
+        <td>{{ booking.package.package_name }}</td>
+        <td>{{ booking.travel_date }}</td>
+        <td>{{ booking.number_of_people }}</td>
+
+        <td>
+            {% if booking.status == "Paid" %}
+                <span class="status-paid">Paid</span><br>
+                <a href="{% url 'view_receipt' booking.id %}" class="chat-link">View Receipt</a> |
+                <a href="{% url 'download_receipt' booking.id %}" class="chat-link" target="_blank">Download</a>
+
+            {% elif booking.status == "Pending" %}
+                <span class="status-pending">Pending</span>
+
+            {% elif booking.status == "Confirmed" %}
+                <span class="status-confirmed">Confirmed</span>
+
+            {% elif booking.status == "Completed" %}
+                ✔ Completed
+
+            {% else %}
+                {{ booking.status }}
+            {% endif %}
+        </td>
+
+        <td>
+            {% if booking.status == 'Pending' %}
+                <a href="{% url 'update_booking_status' booking.id 'confirm' %}" class="btn-small btn-green">Confirm</a>
+                <a href="{% url 'update_booking_status' booking.id 'reject' %}" class="btn-small btn-red">Reject</a>
+
+            {% elif booking.status == 'Confirmed' %}
+                <em style="color:var(--gray-text);">Awaiting Payment</em> |
+                <a href="{% url 'chat' booking.id %}" class="chat-link">💬 Chat</a>
+
+            {% elif booking.status == 'Paid' %}
+                <strong style="color:green;">💰 Payment Received</strong> |
+                <a href="{% url 'chat' booking.id %}" class="chat-link">💬 Chat</a>
+
+            {% elif booking.status == 'Checked-In' %}
+                <form action="{% url 'mark_completed' booking.id %}" method="POST">
+                    {% csrf_token %}
+                    <button class="btn-small btn-green">Mark Completed</button>
+                </form>
+
+            {% elif booking.status == 'Completed' %}
+                ✔ Trip Completed
+            {% endif %}
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+
+{% else %}
+<p>No bookings yet.</p>
+{% endif %}
+
+{% endblock %}

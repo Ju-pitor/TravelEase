@@ -1,0 +1,223 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<style>
+    :root {
+        --blue: #1E3A8A;
+        --gold: #FBBF24;
+        --white: #FFFFFF;
+        --light-blue: #EEF3FF;
+        --gray: #4B5563;
+        --border: #D1D5DB;
+    }
+
+    .package-container {
+        background: var(--white);
+        padding: 25px;
+        border-radius: 18px;
+        box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+        margin-bottom: 40px;
+    }
+
+    .package-title {
+        font-size: 30px;
+        font-weight: 700;
+        color: var(--blue);
+        margin-bottom: 15px;
+    }
+
+    .package-image {
+        width: 100%;
+        max-width: 450px;
+        border-radius: 12px;
+        box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        margin-bottom: 20px;
+    }
+
+    .info-label {
+        font-weight: 600;
+        color: var(--blue);
+    }
+
+    .info-text {
+        color: var(--gray);
+        margin-bottom: 8px;
+    }
+
+    .book-btn {
+        background: var(--blue);
+        color: var(--white);
+        padding: 12px 20px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        text-decoration: none;
+        display: inline-block;
+        margin-top: 15px;
+        border: none;
+    }
+
+    .book-btn:hover {
+        background: #173985;
+    }
+
+    .rating-box, .review-box, .agency-box {
+        background: var(--light-blue);
+        padding: 18px;
+        border-radius: 14px;
+        margin-top: 25px;
+        box-shadow: 0 3px 10px rgba(0,0,0,0.06);
+    }
+
+    select, textarea {
+        width: 100%;
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 10px;
+        margin-top: 8px;
+        margin-bottom: 10px;
+    }
+
+    textarea {
+        height: 80px;
+    }
+
+    .submit-rating {
+        background: var(--gold);
+        color: var(--blue);
+        padding: 10px 16px;
+        border-radius: 8px;
+        font-weight: 600;
+        border: none;
+        cursor: pointer;
+    }
+
+    .submit-rating:hover {
+        background: #f5a524;
+    }
+
+    .review-item {
+        background: var(--white);
+        padding: 14px;
+        border-radius: 12px;
+        margin-bottom: 12px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+
+    .agency-link {
+        font-weight: 600;
+        color: var(--blue);
+        text-decoration: underline;
+    }
+</style>
+
+
+<div class="package-container">
+
+    <h2 class="package-title">{{ package.package_name }}</h2>
+
+    {% if package.image %}
+        <img src="{{ package.image.url }}" class="package-image">
+    {% else %}
+        <p class="info-text">No Image Available</p>
+    {% endif %}
+
+    <p class="info-label">Destination:
+        <span class="info-text">{{ package.destination }}</span>
+    </p>
+
+    <p class="info-label">Price:
+        <span class="info-text">₹{{ package.price }}</span>
+    </p>
+
+    <p class="info-label">No. of People:
+        <span class="info-text">{{ package.people_count }}</span>
+    </p>
+
+    <p class="info-text">{{ package.description }}</p>
+
+    {% if user.is_authenticated and user.is_traveler %}
+        <form action="{% url 'book_package' package.id %}" method="POST">
+            {% csrf_token %}
+            <button type="submit" class="book-btn">Book Now</button>
+        </form>
+    {% else %}
+        <p><a href="{% url 'login' %}">Login</a> to book this package.</p>
+    {% endif %}
+
+
+    <!-- Destination Rating -->
+    <div class="rating-box">
+        <h3 style="color:var(--blue); font-weight:700;">Destination Rating</h3>
+
+        <p><strong>Average Rating:</strong>
+            {% if avg_rating %}
+                ⭐ {{ avg_rating|floatformat:1 }} / 5
+            {% else %}
+                No ratings yet
+            {% endif %}
+        </p>
+
+        {% if user.is_authenticated and user.is_traveler %}
+        <form method="POST" action="{% url 'rate_destination' package.destination.id %}">
+            {% csrf_token %}
+            <select name="rating" required>
+                <option value="1">⭐</option>
+                <option value="2">⭐⭐</option>
+                <option value="3">⭐⭐⭐</option>
+                <option value="4">⭐⭐⭐⭐</option>
+                <option value="5">⭐⭐⭐⭐⭐</option>
+            </select>
+
+            <textarea name="review" placeholder="Write your feedback..."></textarea>
+
+            <button class="submit-rating" type="submit">Submit Rating</button>
+        </form>
+        {% endif %}
+    </div>
+
+
+    <!-- Show Reviews -->
+    {% if reviews %}
+    <div class="review-box">
+        <h4 style="color:var(--blue);">User Reviews</h4>
+        {% for review in reviews %}
+        <div class="review-item">
+            <strong>{{ review.traveler.username }}:</strong>
+            ⭐{{ review.rating }}<br>
+            {{ review.review }}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+
+    <!-- Package Rating -->
+    {% if user.is_authenticated and user.is_traveler %}
+    <div class="rating-box">
+        <h3 style="color:var(--blue)">Rate This Package</h3>
+
+        <form method="POST" action="{% url 'rate_package' package.id %}">
+            {% csrf_token %}
+            {% for i in "12345" %}
+                <input type="radio" name="rating" value="{{ i }}"> {{ i }}
+            {% endfor %}
+            <textarea name="review" placeholder="Write your feedback..."></textarea>
+            <button class="submit-rating" type="submit">Submit Rating</button>
+        </form>
+    </div>
+    {% endif %}
+
+
+    <!-- Agency Info -->
+    <div class="agency-box">
+        <h3 style="color:var(--blue);">Agency Information</h3>
+        <p class="info-label">Agency:
+            <span class="info-text">{{ package.agency.agency_name }}</span>
+        </p>
+        <a href="{% url 'agency_detail' package.agency.id %}" class="agency-link">View Agency Profile</a>
+    </div>
+
+</div>
+
+{% endblock %}

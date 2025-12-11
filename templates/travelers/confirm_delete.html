@@ -1,0 +1,8 @@
+<h2>Delete Travel Plan</h2>
+<p>Are you sure you want to delete <strong>{{ plan.destination }}</strong>?</p>
+
+<form method="post">
+    {% csrf_token %}
+    <button type="submit">Yes, delete</button>
+</form>
+<a href="{% url 'traveler_dashboard' %}">Cancel</a>

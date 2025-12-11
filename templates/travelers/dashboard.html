@@ -1,0 +1,1042 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+
+<style>
+    :root {
+        --blue: #1E88E5;
+        --blue-light: #42A5F5;
+        --blue-dark: #1565C0;
+        --navy: #0D47A1;
+        --gold: #F4B400;
+        --gold-light: #FFD54F;
+        --gold-dark: #F9A825;
+        --white: #FFFFFF;
+        --gray-light: #F5F7FA;
+        --text-primary: #263238;
+        --text-secondary: #546E7A;
+        --bg-primary: #FFFFFF;
+        --bg-secondary: #F5F7FA;
+        --card-bg: #FFFFFF;
+        --shadow: rgba(30, 136, 229, 0.1);
+        --success: #4CAF50;
+        --warning: #FF9800;
+        --error: #F44336;
+    }
+
+    [data-theme="dark"] {
+        --white: #1a1a1a;
+        --gray-light: #2d2d2d;
+        --text-primary: #E3F2FD;
+        --text-secondary: #90CAF9;
+        --bg-primary: #0D1B2A;
+        --bg-secondary: #1B263B;
+        --card-bg: #1B263B;
+        --shadow: rgba(0, 0, 0, 0.3);
+        --blue: #42A5F5;
+        --blue-light: #64B5F6;
+        --navy: #0D47A1;
+    }
+
+    .dashboard-wrapper {
+        background: var(--bg-secondary);
+        min-height: 100vh;
+        padding: 20px;
+    }
+
+    .dashboard-container {
+        max-width: 1400px;
+        margin: 0 auto;
+    }
+
+    .hero-section {
+        background: linear-gradient(135deg, var(--blue-dark) 0%, var(--blue) 50%, var(--blue-light) 100%);
+        border-radius: 20px;
+        padding: 40px;
+        margin-bottom: 30px;
+        box-shadow: 0 20px 60px rgba(30, 136, 229, 0.3);
+        color: var(--white);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .hero-section::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 200px;
+        height: 200px;
+        background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%);
+        border-radius: 50%;
+        transform: translate(60px, -60px);
+        opacity: 0.1;
+    }
+
+    .back-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        color: rgba(255, 255, 255, 0.9);
+        text-decoration: none;
+        font-size: 0.95rem;
+        transition: all 0.3s ease;
+        padding: 8px 16px;
+        border-radius: 8px;
+        margin-bottom: 15px;
+        background: rgba(255, 255, 255, 0.1);
+    }
+
+    .back-link:hover {
+        color: var(--white);
+        background: rgba(255, 255, 255, 0.2);
+        transform: translateX(-5px);
+    }
+
+    .hero-title {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 10px;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+    }
+
+    .hero-subtitle {
+        font-size: 1.2rem;
+        opacity: 0.9;
+        margin: 0;
+    }
+
+    .main-layout {
+        margin-bottom: 30px;
+    }
+
+    /* Horizontal Navigation Tabs */
+    .nav-tabs-container {
+        background: var(--card-bg);
+        border-radius: 16px;
+        padding: 20px;
+        margin-bottom: 30px;
+        box-shadow: 0 8px 30px var(--shadow);
+        border: 2px solid var(--blue-light);
+    }
+
+    .nav-menu {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    .nav-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 14px 24px;
+        border-radius: 12px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        color: var(--text-primary);
+        text-decoration: none;
+        font-weight: 600;
+        background: var(--bg-secondary);
+        border: 2px solid transparent;
+    }
+
+    .nav-item:hover {
+        background: var(--blue-light);
+        color: var(--white);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(30, 136, 229, 0.3);
+    }
+
+    .nav-item.active {
+        background: linear-gradient(135deg, var(--blue) 0%, var(--blue-light) 100%);
+        color: var(--white);
+        box-shadow: 0 6px 20px rgba(30, 136, 229, 0.4);
+        border-color: var(--gold);
+    }
+
+    .nav-icon {
+        font-size: 1.3rem;
+    }
+
+    /* Right Content Area */
+    .content-area {
+        background: var(--card-bg);
+        border-radius: 20px;
+        padding: 40px;
+        box-shadow: 0 8px 30px var(--shadow);
+        border: 2px solid var(--blue-light);
+        min-height: 600px;
+    }
+
+    .content-section {
+        display: none;
+    }
+
+    .content-section.active {
+        display: block;
+        animation: fadeIn 0.4s ease;
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .section-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 30px;
+        padding-bottom: 20px;
+        border-bottom: 3px solid var(--gold);
+    }
+
+    .section-title-container {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .section-icon {
+        font-size: 2.2rem;
+    }
+
+    .section-title {
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--navy);
+        margin: 0;
+    }
+
+    .add-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        padding: 12px 24px;
+        background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%);
+        color: var(--navy);
+        text-decoration: none;
+        border-radius: 12px;
+        font-weight: 700;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(244, 180, 0, 0.3);
+    }
+
+    .add-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(244, 180, 0, 0.5);
+        background: linear-gradient(135deg, var(--gold-light) 0%, var(--gold) 100%);
+    }
+
+    /* Wishlist Items */
+    .wishlist-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 20px;
+        margin-bottom: 15px;
+        background: var(--bg-secondary);
+        border-radius: 12px;
+        border: 2px solid var(--blue-light);
+        transition: all 0.3s ease;
+    }
+
+    .wishlist-item:hover {
+        background: rgba(30, 136, 229, 0.05);
+        transform: translateX(5px);
+        border-color: var(--gold);
+    }
+
+    .wishlist-content {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        flex: 1;
+    }
+
+    .wishlist-icon {
+        font-size: 1.8rem;
+    }
+
+    .remove-btn {
+        color: var(--error);
+        text-decoration: none;
+        padding: 8px 16px;
+        border-radius: 8px;
+        font-size: 0.9rem;
+        transition: all 0.3s ease;
+        background: var(--white);
+        border: 2px solid var(--error);
+        font-weight: 600;
+    }
+
+    .remove-btn:hover {
+        background: var(--error);
+        color: var(--white);
+        transform: scale(1.05);
+    }
+
+    /* Travel Plans */
+    .plan-item {
+        padding: 25px;
+        margin-bottom: 20px;
+        background: linear-gradient(135deg, rgba(30, 136, 229, 0.05) 0%, rgba(66, 165, 245, 0.05) 100%);
+        border-radius: 15px;
+        border-left: 5px solid var(--blue);
+        border: 2px solid var(--blue-light);
+        transition: all 0.3s ease;
+    }
+
+    .plan-item:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 6px 20px rgba(30, 136, 229, 0.15);
+        border-color: var(--gold);
+    }
+
+    .plan-destination {
+        font-size: 1.3rem;
+        font-weight: 700;
+        color: var(--text-primary);
+        margin-bottom: 8px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .plan-dates {
+        color: var(--text-secondary);
+        font-size: 1rem;
+        margin-bottom: 15px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .plan-actions {
+        display: flex;
+        gap: 12px;
+    }
+
+    .action-link {
+        text-decoration: none;
+        padding: 8px 16px;
+        border-radius: 8px;
+        font-size: 0.9rem;
+        transition: all 0.3s ease;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .edit-link {
+        color: var(--blue);
+        background: rgba(30, 136, 229, 0.1);
+        border: 2px solid var(--blue);
+    }
+
+    .edit-link:hover {
+        background: var(--blue);
+        color: var(--white);
+    }
+
+    .delete-link {
+        color: var(--error);
+        background: rgba(244, 67, 54, 0.1);
+        border: 2px solid var(--error);
+    }
+
+    .delete-link:hover {
+        background: var(--error);
+        color: var(--white);
+    }
+
+    /* Bookings Section */
+    .booking-summary {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 30px;
+        background: linear-gradient(135deg, rgba(76, 175, 80, 0.1) 0%, rgba(102, 187, 106, 0.1) 100%);
+        border-radius: 15px;
+        margin-bottom: 20px;
+        border: 2px solid var(--success);
+    }
+
+    .booking-count {
+        font-size: 1.3rem;
+        color: var(--text-primary);
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .booking-actions {
+        display: flex;
+        gap: 12px;
+    }
+
+    .btn {
+        padding: 12px 24px;
+        border-radius: 10px;
+        text-decoration: none;
+        text-align: center;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        border: 2px solid transparent;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, var(--blue) 0%, var(--blue-light) 100%);
+        color: var(--white);
+        box-shadow: 0 4px 15px rgba(30, 136, 229, 0.3);
+    }
+
+    .btn-primary:hover {
+        background: linear-gradient(135deg, var(--blue-light) 0%, var(--blue) 100%);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(30, 136, 229, 0.4);
+    }
+
+    .btn-secondary {
+        background: var(--white);
+        color: var(--blue);
+        border: 2px solid var(--blue-light);
+    }
+
+    .btn-secondary:hover {
+        background: var(--blue-light);
+        color: var(--white);
+    }
+
+    /* Grievances Section */
+    .grievance-item {
+        padding: 20px;
+        margin-bottom: 15px;
+        background: var(--bg-secondary);
+        border-radius: 12px;
+        border: 2px solid var(--blue-light);
+        transition: all 0.3s ease;
+    }
+
+    .grievance-item:hover {
+        border-color: var(--gold);
+        transform: translateX(5px);
+    }
+
+    .grievance-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 10px;
+    }
+
+    .grievance-subject {
+        font-size: 1.2rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        margin: 0;
+    }
+
+    .grievance-date {
+        color: var(--text-secondary);
+        font-size: 0.9rem;
+    }
+
+    .grievance-message {
+        color: var(--text-primary);
+        line-height: 1.5;
+        margin-bottom: 10px;
+    }
+
+    .grievance-status {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 600;
+    }
+
+    .status-pending {
+        background: rgba(255, 152, 0, 0.1);
+        color: var(--warning);
+        border: 1px solid var(--warning);
+    }
+
+    .status-resolved {
+        background: rgba(76, 175, 80, 0.1);
+        color: var(--success);
+        border: 1px solid var(--success);
+    }
+
+    /* Empty States */
+    .empty-state {
+        text-align: center;
+        padding: 60px 40px;
+        color: var(--text-secondary);
+    }
+
+    .empty-state-icon {
+        font-size: 4rem;
+        margin-bottom: 20px;
+        opacity: 0.5;
+    }
+
+    .empty-state-text {
+        font-size: 1.1rem;
+        margin-bottom: 20px;
+    }
+
+    /* Recommendations Section */
+    .recommendations-section {
+        background: var(--card-bg);
+        border-radius: 20px;
+        padding: 40px;
+        box-shadow: 0 8px 30px var(--shadow);
+        border: 2px solid var(--blue-light);
+        margin-bottom: 30px;
+    }
+
+    .recommendations-header {
+        text-align: center;
+        margin-bottom: 40px;
+    }
+
+    .recommendations-title {
+        font-size: 2.2rem;
+        font-weight: 700;
+        color: var(--navy);
+        margin-bottom: 10px;
+        background: linear-gradient(135deg, var(--blue) 0%, var(--blue-light) 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .recommendations-subtitle {
+        color: var(--text-secondary);
+        font-size: 1.1rem;
+    }
+
+    .package-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+        gap: 25px;
+        margin-bottom: 30px;
+    }
+
+    .package-card {
+        background: var(--card-bg);
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 4px 15px var(--shadow);
+        transition: all 0.3s ease;
+        border: 2px solid var(--blue-light);
+    }
+
+    .package-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 12px 30px rgba(30, 136, 229, 0.2);
+        border-color: var(--gold);
+    }
+
+    .package-header {
+        background: linear-gradient(135deg, var(--blue) 0%, var(--blue-light) 100%);
+        padding: 20px;
+        color: var(--white);
+    }
+
+    .package-name {
+        font-size: 1.3rem;
+        font-weight: 600;
+        margin: 0;
+    }
+
+    .package-body {
+        padding: 20px;
+    }
+
+    .package-info {
+        margin-bottom: 15px;
+    }
+
+    .package-label {
+        font-size: 0.85rem;
+        color: var(--text-secondary);
+        margin-bottom: 4px;
+    }
+
+    .package-value {
+        font-size: 1rem;
+        color: var(--text-primary);
+        font-weight: 500;
+    }
+
+    .package-price {
+        font-size: 1.5rem;
+        color: var(--gold);
+        font-weight: 700;
+    }
+
+    .package-actions {
+        display: flex;
+        gap: 10px;
+        margin-top: 15px;
+        padding-top: 15px;
+        border-top: 1px solid var(--gray-light);
+    }
+
+    .btn-success {
+        background: linear-gradient(135deg, var(--success) 0%, #66BB6A 100%);
+        color: var(--white);
+        flex: 1;
+        box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+    }
+
+    .btn-success:hover {
+        background: linear-gradient(135deg, #66BB6A 0%, var(--success) 100%);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(76, 175, 80, 0.4);
+    }
+
+    .explore-section {
+        text-align: center;
+        margin-top: 30px;
+    }
+
+    .explore-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        padding: 14px 30px;
+        background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%);
+        color: var(--navy);
+        text-decoration: none;
+        border-radius: 12px;
+        font-weight: 700;
+        font-size: 1.05rem;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(244, 180, 0, 0.3);
+    }
+
+    .explore-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(244, 180, 0, 0.5);
+        background: linear-gradient(135deg, var(--gold-light) 0%, var(--gold) 100%);
+    }
+
+    /* Responsive Design */
+    @media (max-width: 968px) {
+        .nav-menu {
+            flex-direction: column;
+        }
+        
+        .nav-item {
+            width: 100%;
+        }
+
+        .hero-title {
+            font-size: 2rem;
+        }
+
+        .content-area {
+            padding: 25px;
+        }
+
+        .package-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .section-header {
+            flex-direction: column;
+            gap: 15px;
+            align-items: flex-start;
+        }
+
+        .booking-summary {
+            flex-direction: column;
+            gap: 15px;
+            text-align: center;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .dashboard-wrapper {
+            padding: 10px;
+        }
+
+        .hero-section {
+            padding: 25px;
+        }
+
+        .content-area {
+            padding: 20px;
+        }
+
+        .plan-actions, .booking-actions {
+            flex-direction: column;
+        }
+
+        .btn {
+            width: 100%;
+            justify-content: center;
+        }
+    }
+</style>
+
+<div class="dashboard-wrapper">
+    <div class="dashboard-container">
+        <!-- Hero Section -->
+        <div class="hero-section">
+            <a href="{% url 'home' %}" class="back-link">
+                <i class="fas fa-arrow-left"></i>
+                Back to Home
+            </a>
+            <h1 class="hero-title">Welcome, {{ user.username }}! ✨</h1>
+            <p class="hero-subtitle">Your personalized travel dashboard</p>
+        </div>
+
+        <!-- Main Layout: Horizontal Tabs + Content -->
+        <div class="main-layout">
+            <!-- Horizontal Navigation Tabs -->
+                        <div class="nav-tabs-container">
+                <nav class="nav-menu">
+                    <div class="nav-item active" data-section="wishlist">
+                        <span class="nav-icon">💖</span>
+                        <span>My Wishlist</span>
+                    </div>
+                    <div class="nav-item" data-section="plans">
+                        <span class="nav-icon">🗓️</span>
+                        <span>Travel Plans</span>
+                    </div>
+                    <div class="nav-item" data-section="bookings">
+                        <span class="nav-icon">🧳</span>
+                        <span>My Bookings</span>
+                    </div>
+                    <div class="nav-item" data-section="grievances">
+                        <span class="nav-icon">📝</span>
+                        <span>My Grievances</span>
+                    </div>
+                </nav>
+            </div>
+
+            <!-- Content Area -->
+            <main class="content-area">
+                <!-- Wishlist Section -->
+                <section id="wishlist" class="content-section active">
+                    <div class="section-header">
+                        <div class="section-title-container">
+                            <span class="section-icon">💖</span>
+                            <h2 class="section-title">My Wishlist</h2>
+                        </div>
+                    </div>
+                    
+                    {% if wishlist_items %}
+                        {% for item in wishlist_items %}
+                            <div class="wishlist-item">
+                                <div class="wishlist-content">
+                                    {% if item.destination %}
+                                        <span class="wishlist-icon">🏝️</span>
+                                        <div>
+                                            <strong>{{ item.destination.name }}</strong>
+                                            <div style="color: var(--text-secondary); font-size: 0.9rem;">
+                                                Destination
+                                            </div>
+                                        </div>
+                                    {% elif item.package %}
+                                        <span class="wishlist-icon">🎒</span>
+                                        <div>
+                                            <a href="{% url 'package_detail' item.package.id %}" style="color: var(--blue); text-decoration: none; font-weight: 600;">
+                                                {{ item.package.package_name }}
+                                            </a>
+                                            <div style="color: var(--text-secondary); font-size: 0.9rem;">
+                                                {{ item.package.destination.name }}
+                                            </div>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                <a href="{% url 'remove_from_wishlist' item.id %}" class="remove-btn">
+                                    <i class="fas fa-trash"></i>
+                                    Remove
+                                </a>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="empty-state">
+                            <div class="empty-state-icon">💭</div>
+                            <p class="empty-state-text">No items in your wishlist yet. Start exploring amazing destinations!</p>
+                            <a href="{% url 'view_packages' %}" class="btn btn-primary">
+                                <i class="fas fa-compass"></i>
+                                Explore Packages
+                            </a>
+                        </div>
+                    {% endif %}
+                </section>
+
+                <!-- Travel Plans Section -->
+                <section id="plans" class="content-section">
+                    <div class="section-header">
+                        <div class="section-title-container">
+                            <span class="section-icon">🗓️</span>
+                            <h2 class="section-title">Your Travel Plans</h2>
+                        </div>
+                        <a href="{% url 'add_plan' %}" class="add-btn">
+                            <i class="fas fa-plus"></i>
+                            Add New Plan
+                        </a>
+                    </div>
+
+                    {% if travel_plans %}
+                        {% for plan in travel_plans %}
+                            <div class="plan-item">
+                                <div class="plan-destination">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                    {{ plan.destination }}
+                                </div>
+                                <div class="plan-dates">
+                                    <i class="fas fa-calendar-alt"></i>
+                                    {{ plan.start_date }} → {{ plan.end_date }}
+                                </div>
+                                <div class="plan-actions">
+                                    <a href="{% url 'edit_plan' plan.id %}" class="action-link edit-link">
+                                        <i class="fas fa-edit"></i>
+                                        Edit
+                                    </a>
+                                    <a href="{% url 'delete_plan' plan.id %}" class="action-link delete-link">
+                                        <i class="fas fa-trash"></i>
+                                        Delete
+                                    </a>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="empty-state">
+                            <div class="empty-state-icon">📅</div>
+                            <p class="empty-state-text">No travel plans added yet. Create your first adventure!</p>
+                            <a href="{% url 'add_plan' %}" class="btn btn-primary">
+                                <i class="fas fa-plus"></i>
+                                Create First Plan
+                            </a>
+                        </div>
+                    {% endif %}
+                </section>
+
+                <!-- Bookings Section -->
+                <section id="bookings" class="content-section">
+                    <div class="section-header">
+                        <div class="section-title-container">
+                            <span class="section-icon">🧳</span>
+                            <h2 class="section-title">My Bookings</h2>
+                        </div>
+                    </div>
+
+                    {% if bookings %}
+                        <div class="booking-summary">
+                            <div class="booking-count">
+                                <i class="fas fa-suitcase"></i>
+                                You have {{ bookings.count }} booking{{ bookings.count|pluralize }}
+                            </div>
+                            <div class="booking-actions">
+                                <a href="{% url 'traveler_bookings' %}" class="btn btn-primary">
+                                    <i class="fas fa-eye"></i>
+                                    View Bookings
+                                </a>
+                                <a href="{% url 'booking_history' %}" class="btn btn-secondary">
+                                    <i class="fas fa-history"></i>
+                                    History
+                                </a>
+                            </div>
+                        </div>
+                    {% else %}
+                        <div class="empty-state">
+                            <div class="empty-state-icon">✈️</div>
+                            <p class="empty-state-text">You haven't booked any packages yet. Browse our amazing offers below!</p>
+                            <a href="{% url 'view_packages' %}" class="btn btn-primary">
+                                <i class="fas fa-search"></i>
+                                Browse Packages
+                            </a>
+                        </div>
+                    {% endif %}
+                </section>
+
+                <!-- Grievances Section -->
+                 <section id="grievances" class="content-section">
+                    <div class="section-header">
+                        <div class="section-title-container">
+                            <span class="section-icon">📝</span>
+                            <h2 class="section-title">My Grievances</h2>
+                        </div>
+                        <a href="{% url 'submit_grievance' %}" class="add-btn">
+                            <i class="fas fa-plus"></i>
+                            Submit Grievance
+                        </a>
+                    </div>
+
+                    {% if user_grievances %}
+                        {% for grievance in user_grievances %}
+                            <div class="grievance-item">
+                                <div class="grievance-header">
+                                    <h3 class="grievance-subject">{{ grievance.subject }}</h3>
+                                    <span class="grievance-date">
+                                        <i class="fas fa-calendar"></i>
+                                        {{ grievance.submitted_at|date:"M d, Y" }}
+                                    </span>
+                                </div>
+                                <p class="grievance-message">{{ grievance.message }}</p>
+                                <div class="grievance-status {% if grievance.resolved %}status-resolved{% else %}status-pending{% endif %}">
+                                    <i class="fas {% if grievance.resolved %}fa-check-circle{% else %}fa-clock{% endif %}"></i>
+                                    {% if grievance.resolved %}Resolved{% else %}Pending - Under Review{% endif %}
+                                </div>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="empty-state">
+                            <div class="empty-state-icon">📬</div>
+                            <p class="empty-state-text">No grievances submitted yet. Your feedback helps us improve!</p>
+                            <a href="{% url 'submit_grievance' %}" class="btn btn-primary">
+                                <i class="fas fa-envelope"></i>
+                                Submit First Grievance
+                            </a>
+                        </div>
+                    {% endif %}
+                </section>
+            </main>
+        </div>
+
+        <!-- Recommendations Section -->
+        <div class="recommendations-section">
+            <div class="recommendations-header">
+                <h2 class="recommendations-title">🌍 Recommended Packages for You</h2>
+                <p class="recommendations-subtitle">Discover amazing travel experiences curated just for you</p>
+            </div>
+
+            {% if packages %}
+                <div class="package-grid">
+                    {% for pkg in packages %}
+                        <div class="package-card">
+                            <div class="package-header">
+                                <h4 class="package-name">{{ pkg.package_name }}</h4>
+                            </div>
+                            <div class="package-body">
+                                <div class="package-info">
+                                    <div class="package-label">📍 Destination</div>
+                                    <div class="package-value">{{ pkg.destination.name }}</div>
+                                </div>
+                                <div class="package-info">
+                                    <div class="package-label">💼 Travel Agency</div>
+                                    <div class="package-value">{{ pkg.agency.agency_name }}</div>
+                                </div>
+                                <div class="package-info">
+                                    <div class="package-label">💰 Price</div>
+                                    <div class="package-price">₹{{ pkg.price }}</div>
+                                </div>
+                                <div class="package-actions">
+                                    <a href="{% url 'package_detail' pkg.id %}" class="btn btn-primary" style="flex: 1;">
+                                        <i class="fas fa-info-circle"></i>
+                                        Details
+                                    </a>
+                                    <a href="{% url 'book_package' pkg.id %}" class="btn btn-success">
+                                        <i class="fas fa-shopping-cart"></i>
+                                        Book
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+
+                <div class="explore-section">
+                    <a href="{% url 'view_packages' %}" class="explore-btn">
+                        <i class="fas fa-compass"></i>
+                        Explore All Packages →
+                    </a>
+                </div>
+            {% else %}
+                <div class="empty-state">
+                    <div class="empty-state-icon">🏖️</div>
+                    <p class="empty-state-text">No packages available at the moment. Check back soon for exciting deals!</p>
+                    <a href="{% url 'home' %}" class="btn btn-primary">
+                        <i class="fas fa-home"></i>
+                        Back to Home
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<script>
+    // Navigation functionality
+    document.addEventListener('DOMContentLoaded', function() {
+        const navItems = document.querySelectorAll('.nav-item');
+        const sections = document.querySelectorAll('.content-section');
+
+        navItems.forEach(item => {
+            item.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                // Remove active class from all nav items
+                navItems.forEach(nav => nav.classList.remove('active'));
+                
+                // Add active class to clicked item
+                this.classList.add('active');
+                
+                // Hide all sections
+                sections.forEach(section => section.classList.remove('active'));
+                
+                // Show selected section
+                const sectionId = this.getAttribute('data-section');
+                document.getElementById(sectionId).classList.add('active');
+                
+                // Scroll to top of content area
+                document.querySelector('.content-area').scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            });
+        });
+
+        // Fix for navbar overlap on scroll
+        window.addEventListener('scroll', function() {
+            const navTabs = document.querySelector('.nav-tabs-container');
+            const heroSection = document.querySelector('.hero-section');
+            
+            if (navTabs && heroSection) {
+                const heroBottom = heroSection.getBoundingClientRect().bottom;
+                const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+                
+                if (scrollTop > 100) {
+                    navTabs.style.position = 'fixed';
+                    navTabs.style.top = '80px'; // Adjust based on your navbar height
+                    navTabs.style.width = 'calc(100% - 40px)';
+                    navTabs.style.maxWidth = '1400px';
+                    navTabs.style.left = '50%';
+                    navTabs.style.transform = 'translateX(-50%)';
+                    navTabs.style.zIndex = '99';
+                } else {
+                    navTabs.style.position = 'sticky';
+                    navTabs.style.top = '100px';
+                    navTabs.style.width = '100%';
+                    navTabs.style.left = '0';
+                    navTabs.style.transform = 'none';
+                }
+            }
+        });
+    });
+
+</script>
+{% endblock %}

@@ -1,0 +1,411 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<style>
+/* ----- THEME VARIABLES ----- */
+:root {
+    /* Light theme */
+    --primary-blue: #1E88E5;
+    --gold: #F4B400;
+    --navy: #0D47A1;
+    --text-dark: #1a1a1a;
+    --text-light: #666;
+    --bg-primary: #FFFFFF;
+    --bg-secondary: #f5f7fa;
+    --bg-tertiary: #f0f2f5;
+    --card-bg: #FFFFFF;
+    --card-border: #e0e0e0;
+    --shadow-color: rgba(0, 0, 0, 0.1);
+    --shadow-hover: rgba(0, 0, 0, 0.18);
+}
+
+[data-theme="dark"] {
+    /* Dark theme */
+    --primary-blue: #64B5F6;
+    --gold: #FFCA28;
+    --navy: #90CAF9;
+    --text-dark: #f0f0f0;
+    --text-light: #b0b0b0;
+    --bg-primary: #121212;
+    --bg-secondary: #1e1e1e;
+    --bg-tertiary: #2d2d2d;
+    --card-bg: #1e1e1e;
+    --card-border: #333;
+    --shadow-color: rgba(0, 0, 0, 0.3);
+    --shadow-hover: rgba(0, 0, 0, 0.5);
+}
+
+/* ----- BASE STYLES ----- */
+body {
+    background-color: var(--bg-primary);
+    color: var(--text-dark);
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* ----- THEME TOGGLE ----- */
+.theme-toggle-container {
+    display: flex;
+    justify-content: flex-end;
+    padding: 10px 50px 0;
+    max-width: 1150px;
+    margin: 0 auto 20px;
+}
+
+.theme-toggle {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    background: var(--bg-tertiary);
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-weight: 500;
+    font-size: 0.9rem;
+    color: var(--text-dark);
+    transition: all 0.3s;
+}
+
+.theme-toggle:hover {
+    background: var(--bg-secondary);
+}
+
+.toggle-switch {
+    position: relative;
+    width: 50px;
+    height: 24px;
+    background: var(--card-border);
+    border-radius: 12px;
+    transition: background 0.3s;
+}
+
+.toggle-slider {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    background: var(--gold);
+    border-radius: 50%;
+    top: 2px;
+    left: 2px;
+    transition: transform 0.3s;
+}
+
+[data-theme="dark"] .toggle-slider {
+    transform: translateX(26px);
+}
+
+.toggle-icon {
+    font-size: 1rem;
+}
+
+/* ----- TITLE ----- */
+.page-title {
+    text-align: center;
+    color: var(--primary-blue);
+    font-size: 2.3rem;
+    margin-bottom: 30px;
+    padding-top: 10px;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+}
+
+/* ----- GRID (THREE CARDS PER ROW) ----- */
+.package-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 30px;
+    padding: 0 50px 40px;
+    max-width: 1150px;
+    margin: auto;
+}
+
+/* ----- CARD STYLE ----- */
+.package-card {
+    background: var(--card-bg);
+    border-radius: 15px;
+    padding: 20px;
+    box-shadow: 0 6px 18px var(--shadow-color);
+    border-top: 6px solid var(--gold);
+    border: 1px solid var(--card-border);
+    transition: all 0.3s ease-in-out;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.package-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 30px var(--shadow-hover);
+}
+
+/* ----- PACKAGE NAME ----- */
+.package-name {
+    font-size: 1.4rem;
+    color: var(--navy);
+    margin-bottom: 5px;
+    font-weight: 700;
+}
+
+/* ----- IMAGE ----- */
+.package-image {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    border-radius: 12px;
+    margin: 15px 0;
+    border: 3px solid var(--primary-blue);
+}
+
+.image-placeholder {
+    width: 100%;
+    height: 200px;
+    background: var(--bg-tertiary);
+    border-radius: 12px;
+    margin: 15px 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-light);
+    border: 2px dashed var(--card-border);
+}
+
+/* ----- DETAILS ----- */
+.package-details {
+    flex-grow: 1;
+    text-align: left;
+    margin: 10px 0;
+}
+
+.detail-item {
+    margin: 8px 0;
+    color: var(--text-dark);
+    font-size: 0.95rem;
+    display: flex;
+    align-items: flex-start;
+}
+
+.detail-label {
+    font-weight: 600;
+    min-width: 100px;
+    color: var(--text-light);
+}
+
+.detail-value {
+    flex-grow: 1;
+    color: var(--text-dark);
+}
+
+/* ----- BUTTONS CONTAINER ----- */
+.card-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+    justify-content: center;
+}
+
+/* ----- BUTTONS ----- */
+.details-btn, .book-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 20px;
+    border-radius: 10px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s;
+    font-size: 0.95rem;
+    gap: 8px;
+    border: none;
+    cursor: pointer;
+}
+
+.details-btn {
+    background: var(--bg-tertiary);
+    color: var(--text-dark);
+    border: 1px solid var(--card-border);
+}
+
+.book-btn {
+    background: var(--gold);
+    color: var(--text-dark);
+    font-weight: 700;
+}
+
+.details-btn:hover {
+    background: var(--bg-secondary);
+    transform: translateY(-2px);
+}
+
+.book-btn:hover {
+    background: var(--primary-blue);
+    color: white;
+    transform: translateY(-2px);
+}
+
+/* ----- NO PACKAGES MESSAGE ----- */
+.no-packages {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--text-light);
+    font-size: 1.2rem;
+    grid-column: 1 / -1;
+}
+
+/* ----- RESPONSIVE DESIGN ----- */
+@media (max-width: 1200px) {
+    .package-grid {
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    }
+}
+
+@media (max-width: 992px) {
+    .package-grid {
+        grid-template-columns: repeat(2, 1fr);
+        padding: 0 30px 40px;
+    }
+}
+
+@media (max-width: 768px) {
+    .package-grid {
+        grid-template-columns: 1fr;
+        padding: 0 20px 40px;
+        gap: 25px;
+    }
+    
+    .theme-toggle-container {
+        padding: 10px 20px 0;
+        justify-content: center;
+    }
+    
+    .page-title {
+        font-size: 2rem;
+        padding: 0 20px;
+    }
+    
+    .card-actions {
+        flex-direction: column;
+    }
+    
+    .details-btn, .book-btn {
+        width: 100%;
+    }
+}
+
+@media (max-width: 480px) {
+    .package-grid {
+        padding: 0 15px 30px;
+    }
+    
+    .page-title {
+        font-size: 1.8rem;
+    }
+    
+    .package-name {
+        font-size: 1.3rem;
+    }
+}
+</style>
+
+<!-- Theme Toggle Switch -->
+<div class="theme-toggle-container">
+    <div class="theme-toggle" id="themeToggle">
+        <span class="toggle-icon">☀️</span>
+        <div class="toggle-switch">
+            <div class="toggle-slider"></div>
+        </div>
+        <span class="toggle-icon">🌙</span>
+    </div>
+</div>
+
+<h2 class="page-title">Available Travel Packages</h2>
+
+{% if packages %}
+<div class="package-grid">
+    {% for package in packages %}
+    <div class="package-card">
+        <div class="package-name">{{ package.package_name }}</div>
+        
+        {% if package.image %}
+            <img src="{{ package.image.url }}" alt="{{ package.package_name }}" class="package-image">
+        {% else %}
+            <div class="image-placeholder">
+                <span>No Image Available</span>
+            </div>
+        {% endif %}
+        
+        <div class="package-details">
+            <div class="detail-item">
+                <span class="detail-label">Destination:</span>
+                <span class="detail-value">{{ package.destination }}</span>
+            </div>
+            <div class="detail-item">
+                <span class="detail-label">Duration:</span>
+                <span class="detail-value">{{ package.duration }} days</span>
+            </div>
+            <div class="detail-item">
+                <span class="detail-label">Price:</span>
+                <span class="detail-value">₹{{ package.price }}</span>
+            </div>
+            {% if package.description %}
+            <div class="detail-item">
+                <span class="detail-label">Description:</span>
+                <span class="detail-value">{{ package.description|truncatechars:80 }}</span>
+            </div>
+            {% endif %}
+        </div>
+        
+        <div class="card-actions">
+            <a href="{% url 'package_detail' package.id %}" class="details-btn">
+                <i class="fas fa-info-circle"></i>
+                Details
+            </a>
+            <a href="{% url 'book_package' package.id %}" class="book-btn">
+                <i class="fas fa-calendar-check"></i>
+                Book Now
+            </a>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="no-packages">
+    <p>No packages available at the moment.</p>
+    <p style="margin-top: 10px; font-size: 1rem;">Check back soon for new travel deals!</p>
+</div>
+{% endif %}
+
+<script>
+// Theme toggle functionality
+document.addEventListener('DOMContentLoaded', function() {
+    const themeToggle = document.getElementById('themeToggle');
+    const body = document.body;
+    
+    // Check for saved theme or default to light
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    body.setAttribute('data-theme', savedTheme);
+    
+    // Toggle theme on click
+    themeToggle.addEventListener('click', function() {
+        const currentTheme = body.getAttribute('data-theme');
+        const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+        
+        body.setAttribute('data-theme', newTheme);
+        localStorage.setItem('theme', newTheme);
+    });
+    
+    // Add animation to cards on load
+    const cards = document.querySelectorAll('.package-card');
+    cards.forEach((card, index) => {
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(20px)';
+        
+        setTimeout(() => {
+            card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+            card.style.opacity = '1';
+            card.style.transform = 'translateY(0)';
+        }, index * 100);
+    });
+});
+</script>
+
+{% endblock %}
